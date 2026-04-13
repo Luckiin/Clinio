@@ -387,9 +387,8 @@ export default function PaginaAgenda() {
             <CalendarioSemanal
               consultas={consultas}
               dataInicio={inicioSemana(dataAtual)}
+              aoClicarDia={irParaDia}
               aoClicarConsulta={abrirDetalhes}
-              aoClicarSlotVazio={(dataHora) => abrirNovaConsulta(dataHora)}
-              aoReagendar={aoReagendarDrag}
             />
           )}
           {visao === 'dia' && (
