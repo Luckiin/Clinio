@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { criarClienteServidor } from '@/lib/supabase-servidor'
 import { dispararEvento } from '@/servicos/motorAutomacoes'
 
@@ -40,8 +40,10 @@ export async function POST(
       clinica_id: membro.clinica_id,
       paciente_id,
       consulta_id,
-      disparo_manual: true,
-      automacao_id_especifica: params.id,
+      dados_extras: {
+        disparo_manual: true,
+        automacao_id_especifica: params.id,
+      },
     })
 
     // Registra execução manual
