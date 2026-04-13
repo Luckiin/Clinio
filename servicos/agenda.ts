@@ -15,17 +15,14 @@ export function converterConsultasParaEventos(
   return consultas.map((c) => ({
     id: c.id,
     titulo: c.paciente?.nome || 'Paciente',
-    inicio: new Date(c.data_hora_inicio),
-    fim: new Date(c.data_hora_fim),
+    inicio: c.data_hora_inicio,
+    fim: c.data_hora_fim,
+    cor: c.medico?.cor_agenda || '#3B82F6',
+    paciente: c.paciente?.nome || '',
+    medico: c.medico?.nome || '',
     status: c.status,
-    medicoId: c.medico_id,
-    medicoCor: c.medico?.cor_agenda || '#3B82F6',
-    medicoNome: c.medico?.nome,
-    salaId: c.sala_id,
-    pacienteNome: c.paciente?.nome,
-    pacienteTelefone: c.paciente?.telefone,
-    tipoConsultaNome: c.tipo_consulta?.nome,
-    probabilidadeFalta: c.previsao_falta?.probabilidade,
+    tipo: c.tipo,
+    dados: c,
   }))
 }
 
