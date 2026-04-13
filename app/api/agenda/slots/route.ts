@@ -77,10 +77,11 @@ export async function GET(requisicao: NextRequest) {
 
     const slots = await gerarSlotsDisponiveis(
       clinicaId,
-      medicoId,
-      data,
-      duracaoMinutos || medico.duracao_padrao,
-      { inicio: horarioTrabalho.inicio, fim: horarioTrabalho.fim }
+      {
+        medicoId,
+        data,
+        duracaoMin: duracaoMinutos || medico.duracao_padrao,
+      }
     )
 
     // Adicionar nome do médico nos slots
