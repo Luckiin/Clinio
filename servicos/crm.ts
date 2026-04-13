@@ -145,8 +145,6 @@ export async function buscarTagsUnicas(clinicaId: string): Promise<string[]> {
   return unicas
 }
 
-// ─── OPORTUNIDADES ───────────────────────────────────────────
-
 export async function listarOportunidades(
   clinicaId: string,
   filtros?: {
@@ -331,8 +329,8 @@ export async function recalcularPontuacao(
 
   const mesesCliente = paciente
     ? Math.floor(
-        (Date.now() - new Date(paciente.criado_em).getTime()) / (1000 * 60 * 60 * 24 * 30)
-      )
+      (Date.now() - new Date(paciente.criado_em).getTime()) / (1000 * 60 * 60 * 24 * 30)
+    )
     : 0
 
   const pontosConsultas = (totalConsultas ?? 0) * 10
