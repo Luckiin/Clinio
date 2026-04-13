@@ -18,8 +18,11 @@ import {
   LogOut,
   Bell,
   ChevronLeft,
+  Moon,
+  Sun
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
 import { criarClienteNavegador } from '@/lib/supabase-cliente'
 import { useRouter } from 'next/navigation'
 
@@ -52,6 +55,12 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
   const caminho = usePathname()
   const roteador = useRouter()
   const [recolhida, setRecolhida] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const [montado, setMontado] = useState(false)
+
+  useEffect(() => {
+    setMontado(true)
+  }, [])
 
   async function sair() {
     const supabase = criarClienteNavegador()
@@ -62,7 +71,7 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
   return (
     <aside
       className={`
-        flex flex-col h-screen bg-white/90 backdrop-blur-md border-r border-slate-200/80 text-slate-600 transition-all duration-300
+        flex flex-col h-screen bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-r border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 transition-all duration-300
         ${recolhida ? 'w-20' : 'w-72'}
         fixed left-0 top-0 z-30 shadow-glass
       `}
@@ -82,7 +91,21 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
             </div>
           </div>
         )}
-        <button
+        <div className="flex items-center gap-1 ml-auto">
+          {montado && (
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
+              aria-label="Alternar tema"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+          )}
+          <button
           onClick={() => setRecolhida(!recolhida)}
           className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors ml-auto"
           aria-label={recolhida ? 'Expandir menu' : 'Recolher menu'}
@@ -91,6 +114,7 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
             className={`w-5 h-5 transition-transform ${recolhida ? 'rotate-180' : ''}`}
           />
         </button>
+        </div>
       </div>
 
       {/* Itens de navegação */}
@@ -108,8 +132,8 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
               className={`
                 flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all duration-200 group
                 ${ativo
-                  ? 'bg-primaria-50/80 text-primaria-600 font-semibold shadow-sm border border-primaria-100/50'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 border border-transparent'
+                  ? 'bg-primaria-50/80 dark:bg-primaria-900/20 text-primaria-600 dark:text-primaria-400 font-semibold shadow-sm border border-primaria-100/50 dark:border-primaria-800/50'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-200 border border-transparent'
                 }
                 ${recolhida ? 'justify-center mx-1' : ''}
               `}
@@ -125,7 +149,7 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
       </nav>
 
       {/* Rodapé da barra lateral */}
-      <div className="px-4 py-4 border-t border-slate-100 bg-slate-50/50">
+      <div className="px-4 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
         {/* Notificações */}
         <Link
           href="/notificacoes"

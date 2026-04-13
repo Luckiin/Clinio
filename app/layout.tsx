@@ -5,6 +5,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ProvedorTema } from '@/componentes/tema/ProvedorTema'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,9 +25,11 @@ export default function LayoutRaiz({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={`${inter.className} antialiased bg-gray-50`}>
-        {children}
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased bg-gray-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300`}>
+        <ProvedorTema attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ProvedorTema>
       </body>
     </html>
   )
