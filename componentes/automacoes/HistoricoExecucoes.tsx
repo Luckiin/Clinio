@@ -65,10 +65,10 @@ export function HistoricoExecucoes({ automacaoId }: PropsHistoricoExecucoes) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm text-gray-500">{total} execuções no total</p>
+        <p className="text-sm text-gray-500 dark:text-slate-400">{total} execuções no total</p>
         <button
           onClick={carregar}
-          className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+          className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
         >
           <RefreshCw className="w-3 h-3" /> Atualizar
         </button>
@@ -87,16 +87,16 @@ export function HistoricoExecucoes({ automacaoId }: PropsHistoricoExecucoes) {
           return (
             <div
               key={exec.id}
-              className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+              className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-slate-900/50 rounded-lg"
             >
               <IconeStatus className={`w-4 h-4 mt-0.5 flex-shrink-0 ${cfg.classe}`} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-gray-700">
+                  <span className="text-xs font-medium text-gray-700 dark:text-slate-300">
                     {LABEL_STATUS[exec.status]}
                   </span>
                   {exec.pacientes?.nome && (
-                    <span className="text-xs text-gray-500">— {exec.pacientes.nome}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400">— {exec.pacientes.nome}</span>
                   )}
                   <span className="text-xs text-gray-400 ml-auto">{dataFmt}</span>
                 </div>

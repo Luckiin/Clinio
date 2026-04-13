@@ -132,14 +132,14 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-800">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
             {edicao ? 'Editar automação' : 'Nova automação'}
           </h2>
-          <button onClick={aoFechar} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors">
-            <X className="w-5 h-5 text-gray-500" />
+          <button onClick={aoFechar} className="p-1.5 rounded-md hover:bg-gray-100 dark:bg-slate-800 transition-colors">
+            <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
           </button>
         </div>
 
@@ -147,35 +147,35 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
           {/* Nome */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Nome *</label>
             <input
               type="text"
               value={nome}
               onChange={e => setNome(e.target.value)}
               placeholder="Ex.: Lembrete 24h antes"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* Descrição */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Descrição</label>
             <input
               type="text"
               value={descricao}
               onChange={e => setDescricao(e.target.value)}
               placeholder="Opcional — descreva o objetivo desta automação"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* Evento disparador */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Evento disparador *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Evento disparador *</label>
             <select
               value={evento}
               onChange={e => setEvento(e.target.value as EventoAutomacao)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {EVENTOS.map(ev => (
                 <option key={ev.value} value={ev.value}>{ev.label}</option>
@@ -188,7 +188,7 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
 
           {/* Delay */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Delay (horas após o evento)
             </label>
             <input
@@ -197,7 +197,7 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
               max={8760}
               value={delayHoras}
               onChange={e => setDelayHoras(parseInt(e.target.value) || 0)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-400 mt-1">
               0 = imediato. Ex.: 24 = executar 24h após o evento
@@ -205,29 +205,29 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
           </div>
 
           {/* Condições */}
-          <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-gray-700">Condições (opcional)</h3>
+          <div className="border border-gray-100 dark:border-slate-800 rounded-xl p-4 space-y-3">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Condições (opcional)</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Sem mensagem nas últimas X horas</label>
+                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Sem mensagem nas últimas X horas</label>
                 <input
                   type="number"
                   min={1}
                   value={condSemMensagem}
                   onChange={e => setCondSemMensagem(e.target.value === '' ? '' : parseInt(e.target.value))}
                   placeholder="Ex.: 24"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Paciente inativo há X dias</label>
+                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Paciente inativo há X dias</label>
                 <input
                   type="number"
                   min={1}
                   value={condDiasSemConsulta}
                   onChange={e => setCondDiasSemConsulta(e.target.value === '' ? '' : parseInt(e.target.value))}
                   placeholder="Ex.: 180"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -236,10 +236,10 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
           {/* Ações */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-gray-700">Ações *</h3>
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Ações *</h3>
               <button
                 onClick={adicionarAcao}
-                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:text-blue-400 font-medium"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Adicionar ação
@@ -248,13 +248,13 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
 
             <div className="space-y-3">
               {acoes.map((acao, idx) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-4 space-y-3">
+                <div key={idx} className="border border-gray-200 dark:border-slate-700 rounded-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-gray-500">Ação {idx + 1}</span>
+                    <span className="text-xs font-semibold text-gray-500 dark:text-slate-400">Ação {idx + 1}</span>
                     {acoes.length > 1 && (
                       <button
                         onClick={() => removerAcao(idx)}
-                        className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                        className="p-1 rounded hover:bg-red-50 dark:bg-red-900/40 text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -263,11 +263,11 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
 
                   {/* Tipo */}
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Tipo</label>
+                    <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Tipo</label>
                     <select
                       value={acao.tipo}
                       onChange={e => atualizarAcao(idx, 'tipo', e.target.value)}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       {TIPOS_ACAO.map(t => (
                         <option key={t.value} value={t.value}>{t.label}</option>
@@ -278,11 +278,11 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
                   {/* Canal (só para enviar_mensagem) */}
                   {acao.tipo === 'enviar_mensagem' && (
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Canal</label>
+                      <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Canal</label>
                       <select
                         value={acao.canal ?? 'whatsapp'}
                         onChange={e => atualizarAcao(idx, 'canal', e.target.value)}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         {CANAIS.map(c => (
                           <option key={c.value} value={c.value}>{c.label}</option>
@@ -294,13 +294,13 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
                   {/* Template (enviar_mensagem) */}
                   {acao.tipo === 'enviar_mensagem' && (
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Mensagem</label>
+                      <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Mensagem</label>
                       <textarea
                         value={acao.template ?? ''}
                         onChange={e => atualizarAcao(idx, 'template', e.target.value)}
                         placeholder="Ex.: Olá {{nome_paciente}}, lembramos que sua consulta é amanhã às {{hora_consulta}}."
                         rows={3}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       {/* Variáveis de template */}
                       <div className="flex flex-wrap gap-1 mt-1.5">
@@ -309,7 +309,7 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
                             key={v}
                             type="button"
                             onClick={() => inserirVariavel(idx, v)}
-                            className="text-[11px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors"
+                            className="text-[11px] bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded hover:bg-blue-100 dark:bg-blue-900/60 transition-colors"
                           >
                             {v}
                           </button>
@@ -321,13 +321,13 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
                   {/* Título (criar_tarefa) */}
                   {acao.tipo === 'criar_tarefa' && (
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Título da tarefa</label>
+                      <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Título da tarefa</label>
                       <input
                         type="text"
                         value={acao.titulo ?? ''}
                         onChange={e => atualizarAcao(idx, 'titulo', e.target.value)}
                         placeholder="Ex.: Ligar para {{nome_paciente}}"
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   )}
@@ -337,15 +337,15 @@ export function ModalAutomacao({ aberto, automacao, aoFechar, aoSalvar }: PropsM
           </div>
 
           {erro && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{erro}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/40 rounded-lg px-3 py-2">{erro}</p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-slate-800">
           <button
             onClick={aoFechar}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            className="px-4 py-2 text-sm text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:text-slate-200 transition-colors"
           >
             Cancelar
           </button>

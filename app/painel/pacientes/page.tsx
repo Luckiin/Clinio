@@ -110,8 +110,8 @@ export default function PaginaPacientes() {
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Base de Pacientes</h1>
-          <p className="text-slate-500 text-sm">Gerencie o portfólio de clientes e históricos</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Base de Pacientes</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">Gerencie o portfólio de clientes e históricos</p>
         </div>
         <BotaoAcao variante="primario" icone={<Plus className="w-4 h-4" />} onClick={() => abrirModal()}>
           Novo Paciente
@@ -121,7 +121,7 @@ export default function PaginaPacientes() {
       {/* Caixa de Busca e Tabela Principal */}
       <div className="cartao p-0 overflow-hidden">
         {/* Barra superior de ferramentas (Toolbar) */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
           <div className="relative w-full max-w-md">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
@@ -158,7 +158,7 @@ export default function PaginaPacientes() {
                 <tr>
                   <td colSpan={6} className="text-center py-20">
                     <UserCircle className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                    <p className="text-slate-500 font-medium">Nenhum paciente localizado</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">Nenhum paciente localizado</p>
                     {busca && <p className="text-sm text-slate-400">Tente buscar por outro termo.</p>}
                   </td>
                 </tr>
@@ -171,21 +171,21 @@ export default function PaginaPacientes() {
                           {p.nome.substring(0,2).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-bold text-slate-800 truncate max-w-[200px]" title={p.nome}>{p.nome}</p>
-                          {p.cpf && <p className="text-xs text-slate-500 font-mono tracking-wide">CPF: {p.cpf}</p>}
+                          <p className="font-bold text-slate-800 dark:text-slate-200 truncate max-w-[200px]" title={p.nome}>{p.nome}</p>
+                          {p.cpf && <p className="text-xs text-slate-500 dark:text-slate-400 font-mono tracking-wide">CPF: {p.cpf}</p>}
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div className="text-sm text-slate-600 space-y-1">
+                      <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
                         {p.telefone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400" /> {p.telefone}</div>}
                         {p.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400" /> {p.email}</div>}
                       </div>
                     </td>
                     <td>
-                      <div className="text-sm text-slate-600 space-y-1">
+                      <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
                          {p.convenio ? (
-                           <span className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-xs font-semibold">{p.convenio}</span>
+                           <span className="inline-block px-2 py-0.5 bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-100 rounded text-xs font-semibold">{p.convenio}</span>
                          ) : (
                            <span className="text-xs text-slate-400">Particular</span>
                          )}
@@ -194,22 +194,22 @@ export default function PaginaPacientes() {
                     </td>
                     <td>
                        <div className="flex items-center gap-2">
-                         <div className="p-1.5 rounded bg-emerald-50 text-emerald-600">
+                         <div className="p-1.5 rounded bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
                            <Activity className="w-4 h-4" />
                          </div>
                          <div>
-                           <p className="text-xs font-semibold text-slate-800">{p.total_consultas || 0} visitas</p>
-                           <p className="text-[10px] text-slate-500">Última: {p.ultimo_atendimento ? new Date(p.ultimo_atendimento).toLocaleDateString() : 'Nenhuma'}</p>
+                           <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{p.total_consultas || 0} visitas</p>
+                           <p className="text-[10px] text-slate-500 dark:text-slate-400">Última: {p.ultimo_atendimento ? new Date(p.ultimo_atendimento).toLocaleDateString() : 'Nenhuma'}</p>
                          </div>
                        </div>
                     </td>
                     <td>
                       {p.status === 'ativo' ? (
-                        <span className="badge bg-green-100 text-green-700 border-green-200"><CheckCircle className="w-3 h-3 mr-1" /> Ativo</span>
+                        <span className="badge bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"><CheckCircle className="w-3 h-3 mr-1" /> Ativo</span>
                       ) : p.status === 'inativo' ? (
-                        <span className="badge bg-slate-100 text-slate-600 border-slate-200">Inativo</span>
+                        <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700">Inativo</span>
                       ) : (
-                        <span className="badge bg-red-100 text-red-700 border-red-200"><Ban className="w-3 h-3 mr-1" /> Bloqueado</span>
+                        <span className="badge bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"><Ban className="w-3 h-3 mr-1" /> Bloqueado</span>
                       )}
                     </td>
                     <td className="text-right">
@@ -231,15 +231,15 @@ export default function PaginaPacientes() {
       {/* Modal / Sidebar Formulario Paciente */}
       {modalAberto && pacienteEmEdicao && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center sm:justify-end z-50 p-4 sm:p-0">
-          <div className="bg-white rounded-2xl sm:rounded-none sm:rounded-l-2xl shadow-modal w-full max-w-lg h-auto sm:h-full overflow-hidden animate-fade-in flex flex-col transition-all">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-none sm:rounded-l-2xl shadow-modal w-full max-w-lg h-auto sm:h-full overflow-hidden animate-fade-in flex flex-col transition-all">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <UserCircle className="w-5 h-5 text-primaria-500" />
                 {pacienteEmEdicao.id ? 'Editar Ficha do Paciente' : 'Novo Paciente'}
               </h2>
               <button
                 onClick={() => setModalAberto(false)}
-                className="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:bg-slate-800"
               >
                 ×
               </button>
@@ -274,7 +274,7 @@ export default function PaginaPacientes() {
                     type="date"
                     value={pacienteEmEdicao.data_nascimento ? pacienteEmEdicao.data_nascimento.split('T')[0] : ''}
                     onChange={(e) => setPacienteEmEdicao({ ...pacienteEmEdicao, data_nascimento: e.target.value })}
-                    className="campo-input text-slate-600"
+                    className="campo-input text-slate-600 dark:text-slate-400"
                   />
                 </div>
                 <div>
@@ -297,7 +297,7 @@ export default function PaginaPacientes() {
                   />
                 </div>
                 
-                <div className="col-span-2 pt-4 border-t border-slate-100">
+                <div className="col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Informações Clínicas</h3>
                 </div>
 
@@ -307,7 +307,7 @@ export default function PaginaPacientes() {
                     type="text"
                     value={pacienteEmEdicao.convenio || ''}
                     onChange={(e) => setPacienteEmEdicao({ ...pacienteEmEdicao, convenio: e.target.value })}
-                    className="campo-input bg-blue-50/30"
+                    className="campo-input bg-blue-50/30 dark:bg-blue-900/40"
                     placeholder="Ex: Unimed, Bradesco..."
                   />
                 </div>
@@ -318,15 +318,15 @@ export default function PaginaPacientes() {
                     onChange={(e) => setPacienteEmEdicao({ ...pacienteEmEdicao, status: e.target.value as any })}
                     className="campo-input font-medium"
                   >
-                    <option value="ativo" className="text-green-600">🟢 Ativo (Apto)</option>
-                    <option value="inativo" className="text-slate-600">⚪ Inativo (Afastado)</option>
-                    <option value="bloqueado" className="text-red-600">🔴 Bloqueado (Faltas/Inadimp.)</option>
+                    <option value="ativo" className="text-green-600 dark:text-green-400">🟢 Ativo (Apto)</option>
+                    <option value="inativo" className="text-slate-600 dark:text-slate-400">⚪ Inativo (Afastado)</option>
+                    <option value="bloqueado" className="text-red-600 dark:text-red-400">🔴 Bloqueado (Faltas/Inadimp.)</option>
                   </select>
                 </div>
 
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-6 pb-6">
+              <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 mt-6 pb-6">
                 <BotaoAcao variante="secundario" onClick={() => setModalAberto(false)} type="button">
                   Cancelar
                 </BotaoAcao>

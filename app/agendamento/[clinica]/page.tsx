@@ -172,10 +172,10 @@ export default function PaginaAgendamentoPublico() {
 
   if (!clinica && !agendamentoConcluido) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900/50">
         <div className="text-center">
           <Stethoscope className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">Carregando informações da clínica...</p>
+          <p className="text-gray-500 dark:text-slate-400">Carregando informações da clínica...</p>
         </div>
       </div>
     )
@@ -185,37 +185,37 @@ export default function PaginaAgendamentoPublico() {
   if (agendamentoConcluido) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-600" />
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/60 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-3">
             Agendamento Confirmado! 🎉
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-slate-400 mb-6">
             Seu agendamento foi realizado com sucesso. Você receberá uma confirmação no WhatsApp
             {dadosPaciente.email && ' e no email'} informados.
           </p>
 
-          <div className="bg-gray-50 rounded-xl p-5 text-left space-y-3 mb-6">
+          <div className="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-5 text-left space-y-3 mb-6">
             <div className="flex justify-between">
-              <span className="text-gray-500">Paciente</span>
-              <span className="font-medium text-gray-900">{dadosPaciente.nome}</span>
+              <span className="text-gray-500 dark:text-slate-400">Paciente</span>
+              <span className="font-medium text-gray-900 dark:text-slate-100">{dadosPaciente.nome}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Médico</span>
-              <span className="font-medium text-gray-900">{medicoSelecionado?.nome}</span>
+              <span className="text-gray-500 dark:text-slate-400">Médico</span>
+              <span className="font-medium text-gray-900 dark:text-slate-100">{medicoSelecionado?.nome}</span>
             </div>
             {tipoSelecionado && (
               <div className="flex justify-between">
-                <span className="text-gray-500">Tipo</span>
-                <span className="font-medium text-gray-900">{tipoSelecionado.nome}</span>
+                <span className="text-gray-500 dark:text-slate-400">Tipo</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">{tipoSelecionado.nome}</span>
               </div>
             )}
             {slotSelecionado && (
               <div className="flex justify-between">
-                <span className="text-gray-500">Data e hora</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-gray-500 dark:text-slate-400">Data e hora</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">
                   {formatarData(slotSelecionado.data_hora)}{' '}
                   às{' '}
                   {new Date(slotSelecionado.data_hora).toLocaleTimeString('pt-BR', {
@@ -248,7 +248,7 @@ export default function PaginaAgendamentoPublico() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Cabeçalho da clínica */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white dark:bg-slate-800 shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-5 flex items-center gap-4">
           {clinica.logo_url ? (
             <img src={clinica.logo_url} alt={clinica.nome} className="h-12 w-12 rounded-xl object-cover" />
@@ -258,8 +258,8 @@ export default function PaginaAgendamentoPublico() {
             </div>
           )}
           <div>
-            <h1 className="font-bold text-gray-900 text-lg">{clinica.nome}</h1>
-            <p className="text-sm text-gray-500">Agendamento online</p>
+            <h1 className="font-bold text-gray-900 dark:text-slate-100 text-lg">{clinica.nome}</h1>
+            <p className="text-sm text-gray-500 dark:text-slate-400">Agendamento online</p>
           </div>
         </div>
       </header>
@@ -271,31 +271,31 @@ export default function PaginaAgendamentoPublico() {
             <div key={e.id} className="flex items-center">
               <div className={`
                 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-                ${i < indiceEtapa ? 'bg-green-500 text-white' :
+                ${i < indiceEtapa ? 'bg-green-50 dark:bg-green-900/400 text-white' :
                   i === indiceEtapa ? 'bg-blue-600 text-white' :
-                  'bg-gray-200 text-gray-500'}
+                  'bg-gray-200 text-gray-500 dark:text-slate-400'}
               `}>
                 {i < indiceEtapa ? '✓' : i + 1}
               </div>
               <span className={`ml-1.5 text-xs font-medium hidden sm:block
-                ${i === indiceEtapa ? 'text-blue-700' : 'text-gray-500'}`}>
+                ${i === indiceEtapa ? 'text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-slate-400'}`}>
                 {e.rotulo}
               </span>
               {i < etapas.length - 1 && (
                 <div className={`mx-2 flex-1 h-0.5 w-6 sm:w-12
-                  ${i < indiceEtapa ? 'bg-green-500' : 'bg-gray-200'}`}
+                  ${i < indiceEtapa ? 'bg-green-50 dark:bg-green-900/400' : 'bg-gray-200'}`}
                 />
               )}
             </div>
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6">
           {/* ETAPA 1: Tipo de Consulta */}
           {etapa === 'especialidade' && (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Qual tipo de consulta?</h2>
-              <p className="text-gray-500 text-sm mb-6">Selecione o serviço que deseja agendar</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-2">Qual tipo de consulta?</h2>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">Selecione o serviço que deseja agendar</p>
 
               {tiposConsulta.length > 0 ? (
                 <div className="space-y-3">
@@ -306,19 +306,19 @@ export default function PaginaAgendamentoPublico() {
                         setTipoSelecionado(tipo)
                         setEtapa('medico')
                       }}
-                      className="w-full p-4 rounded-xl border-2 border-gray-100 hover:border-blue-300
-                                 hover:bg-blue-50 transition-all text-left flex items-center justify-between"
+                      className="w-full p-4 rounded-xl border-2 border-gray-100 dark:border-slate-800 hover:border-blue-300 dark:border-blue-700
+                                 hover:bg-blue-50 dark:bg-blue-900/40 transition-all text-left flex items-center justify-between"
                     >
                       <div>
-                        <p className="font-semibold text-gray-900">{tipo.nome}</p>
+                        <p className="font-semibold text-gray-900 dark:text-slate-100">{tipo.nome}</p>
                         {tipo.descricao && (
-                          <p className="text-sm text-gray-500 mt-0.5">{tipo.descricao}</p>
+                          <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{tipo.descricao}</p>
                         )}
                       </div>
                       <div className="text-right ml-4">
-                        <p className="text-sm text-gray-500">{tipo.duracao_minutos} min</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">{tipo.duracao_minutos} min</p>
                         {tipo.valor && (
-                          <p className="text-sm font-medium text-green-600">
+                          <p className="text-sm font-medium text-green-600 dark:text-green-400">
                             R$ {tipo.valor.toFixed(2)}
                           </p>
                         )}
@@ -329,7 +329,7 @@ export default function PaginaAgendamentoPublico() {
               ) : (
                 <button
                   onClick={() => setEtapa('medico')}
-                  className="w-full p-4 rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 font-medium"
+                  className="w-full p-4 rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-medium"
                 >
                   Consulta Geral
                 </button>
@@ -340,8 +340,8 @@ export default function PaginaAgendamentoPublico() {
           {/* ETAPA 2: Médico */}
           {etapa === 'medico' && (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Escolha o médico</h2>
-              <p className="text-gray-500 text-sm mb-6">Selecione o profissional de sua preferência</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-2">Escolha o médico</h2>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">Selecione o profissional de sua preferência</p>
 
               <div className="space-y-3">
                 {medicos.map((medico) => (
@@ -351,8 +351,8 @@ export default function PaginaAgendamentoPublico() {
                       setMedicoSelecionado(medico)
                       setEtapa('data')
                     }}
-                    className="w-full p-4 rounded-xl border-2 border-gray-100 hover:border-blue-300
-                               hover:bg-blue-50 transition-all text-left flex items-center gap-4"
+                    className="w-full p-4 rounded-xl border-2 border-gray-100 dark:border-slate-800 hover:border-blue-300 dark:border-blue-700
+                               hover:bg-blue-50 dark:bg-blue-900/40 transition-all text-left flex items-center gap-4"
                   >
                     <div
                       className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0"
@@ -361,9 +361,9 @@ export default function PaginaAgendamentoPublico() {
                       {medico.nome.split(' ').slice(0, 2).map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">{medico.nome}</p>
+                      <p className="font-semibold text-gray-900 dark:text-slate-100">{medico.nome}</p>
                       {medico.especialidade && (
-                        <p className="text-sm text-gray-500">{medico.especialidade}</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">{medico.especialidade}</p>
                       )}
                     </div>
                   </button>
@@ -372,7 +372,7 @@ export default function PaginaAgendamentoPublico() {
 
               <button
                 onClick={() => setEtapa('especialidade')}
-                className="mt-4 text-sm text-gray-400 hover:text-gray-600"
+                className="mt-4 text-sm text-gray-400 hover:text-gray-600 dark:text-slate-400"
               >
                 ← Voltar
               </button>
@@ -382,8 +382,8 @@ export default function PaginaAgendamentoPublico() {
           {/* ETAPA 3: Data */}
           {etapa === 'data' && (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Escolha a data</h2>
-              <p className="text-gray-500 text-sm mb-6">Selecione o dia desejado para a consulta</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-2">Escolha a data</h2>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">Selecione o dia desejado para a consulta</p>
 
               <input
                 type="date"
@@ -417,18 +417,18 @@ export default function PaginaAgendamentoPublico() {
           {/* ETAPA 4: Horário */}
           {etapa === 'horario' && (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Escolha o horário</h2>
-              <p className="text-gray-500 text-sm mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-2">Escolha o horário</h2>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">
                 Disponível em {formatarData(dataSelecionada)}
               </p>
 
               {slots.length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">Não há horários disponíveis nesta data</p>
+                  <p className="text-gray-500 dark:text-slate-400">Não há horários disponíveis nesta data</p>
                   <button
                     onClick={() => setEtapa('data')}
-                    className="mt-4 text-blue-600 text-sm font-medium"
+                    className="mt-4 text-blue-600 dark:text-blue-400 text-sm font-medium"
                   >
                     Escolher outra data
                   </button>
@@ -449,7 +449,7 @@ export default function PaginaAgendamentoPublico() {
                           p-3 rounded-xl border-2 text-sm font-semibold transition-all
                           ${selecionado
                             ? 'border-blue-600 bg-blue-600 text-white'
-                            : 'border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                            : 'border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:border-blue-300 dark:border-blue-700 hover:bg-blue-50 dark:bg-blue-900/40'
                           }
                         `}
                       >
@@ -479,13 +479,13 @@ export default function PaginaAgendamentoPublico() {
           {/* ETAPA 5: Dados do Paciente */}
           {etapa === 'dados' && (
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Seus dados</h2>
-              <p className="text-gray-500 text-sm mb-6">Preencha as informações para o agendamento</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-2">Seus dados</h2>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">Preencha as informações para o agendamento</p>
 
               {erros.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-5">
+                <div className="bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-5">
                   {erros.map((e, i) => (
-                    <p key={i} className="text-sm text-red-700">{e}</p>
+                    <p key={i} className="text-sm text-red-700 dark:text-red-400">{e}</p>
                   ))}
                 </div>
               )}
@@ -565,9 +565,9 @@ export default function PaginaAgendamentoPublico() {
 
         {/* Resumo da seleção */}
         {(medicoSelecionado || tipoSelecionado || slotSelecionado) && (
-          <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm">
-            <p className="font-semibold text-blue-800 mb-2">Resumo do agendamento</p>
-            <div className="space-y-1 text-blue-700">
+          <div className="mt-4 bg-blue-50 dark:bg-blue-900/40 border border-blue-100 rounded-xl p-4 text-sm">
+            <p className="font-semibold text-blue-800 dark:text-blue-300 mb-2">Resumo do agendamento</p>
+            <div className="space-y-1 text-blue-700 dark:text-blue-400">
               {tipoSelecionado && <p>📋 {tipoSelecionado.nome}</p>}
               {medicoSelecionado && <p>👨‍⚕️ {medicoSelecionado.nome}</p>}
               {dataSelecionada && slotSelecionado && (

@@ -115,8 +115,8 @@ export default function PaginaConfiguracoes() {
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Configurações da Clínica</h1>
-          <p className="text-slate-500 text-sm">Gerencie informações globais, horários e automações</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Configurações da Clínica</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">Gerencie informações globais, horários e automações</p>
         </div>
         <BotaoAcao variante="primario" icone={<Save className="w-4 h-4" />} type="submit" disabled={salvando}>
           {salvando ? 'Salvando as nuvens...' : 'Salvar Alterações Globais'}
@@ -183,7 +183,7 @@ export default function PaginaConfiguracoes() {
 
         {/* FUNCIONAMENTO */}
         <div className="md:col-span-5 cartao">
-          <h2 className="titulo-secao flex items-center gap-2 mb-6 text-emerald-600">
+          <h2 className="titulo-secao flex items-center gap-2 mb-6 text-emerald-600 dark:text-emerald-400">
             <Clock className="w-5 h-5" /> Relógio & Fluxo
           </h2>
           <div className="space-y-4">
@@ -195,7 +195,7 @@ export default function PaginaConfiguracoes() {
                   required
                   value={horarios.horario_abertura}
                   onChange={e => setHorarios({...horarios, horario_abertura: e.target.value})}
-                  className="campo-input bg-emerald-50/30 font-bold"
+                  className="campo-input bg-emerald-50/30 dark:bg-emerald-900/40 font-bold"
                 />
               </div>
               <div>
@@ -205,7 +205,7 @@ export default function PaginaConfiguracoes() {
                   required
                   value={horarios.horario_fechamento}
                   onChange={e => setHorarios({...horarios, horario_fechamento: e.target.value})}
-                  className="campo-input text-slate-500 font-bold"
+                  className="campo-input text-slate-500 dark:text-slate-400 font-bold"
                 />
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function PaginaConfiguracoes() {
           </h2>
           <div className="space-y-5">
             
-            <label className="flex items-center gap-3 p-3 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+            <label className="flex items-center gap-3 p-3 border border-slate-100 dark:border-slate-800 rounded-xl cursor-pointer hover:bg-slate-50 dark:bg-slate-900/50 transition-colors">
               <input 
                 type="checkbox" 
                 checked={mensagens.permite_agendamento_online}
@@ -242,30 +242,30 @@ export default function PaginaConfiguracoes() {
                 className="w-5 h-5 rounded border-slate-300 text-primaria-600 focus:ring-primaria-500"
               />
               <div>
-                <p className="text-sm font-bold text-slate-800">Liberar Portal de Agendamento Online</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">Permite que um link público liste médicos disponíveis</p>
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Liberar Portal de Agendamento Online</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Permite que um link público liste médicos disponíveis</p>
               </div>
             </label>
 
             <div>
-              <label className="rotulo-campo text-[11px] uppercase tracking-wider text-slate-500">
+              <label className="rotulo-campo text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Template: WhatsApp Confirmação Agendamento
               </label>
               <textarea
                 value={mensagens.mensagem_confirmacao_consulta}
                 onChange={e => setMensagens({...mensagens, mensagem_confirmacao_consulta: e.target.value})}
-                className="campo-input min-h-[80px] resize-y text-xs text-slate-600 font-mono"
+                className="campo-input min-h-[80px] resize-y text-xs text-slate-600 dark:text-slate-400 font-mono"
               />
             </div>
             
             <div>
-              <label className="rotulo-campo text-[11px] uppercase tracking-wider text-slate-500">
+              <label className="rotulo-campo text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Template: WhatsApp Lembrete no Dia da Consulta
               </label>
               <textarea
                 value={mensagens.mensagem_lembrete_consulta}
                 onChange={e => setMensagens({...mensagens, mensagem_lembrete_consulta: e.target.value})}
-                className="campo-input min-h-[80px] resize-y text-xs text-slate-600 font-mono"
+                className="campo-input min-h-[80px] resize-y text-xs text-slate-600 dark:text-slate-400 font-mono"
               />
             </div>
 

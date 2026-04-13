@@ -38,13 +38,13 @@ interface PropsCalendarioDia {
 
 // Mapeamento de estilos por status
 const ESTILOS_STATUS: Record<StatusConsulta, { fundo: string; borda: string; texto: string }> = {
-  agendado:      { fundo: 'bg-blue-50',   borda: 'border-blue-400',  texto: 'text-blue-800' },
-  confirmado:    { fundo: 'bg-green-50',  borda: 'border-green-400', texto: 'text-green-800' },
-  em_atendimento:{ fundo: 'bg-yellow-50', borda: 'border-yellow-400',texto: 'text-yellow-800' },
-  concluido:     { fundo: 'bg-gray-100',  borda: 'border-gray-300',  texto: 'text-gray-600' },
-  cancelado:     { fundo: 'bg-red-50',    borda: 'border-red-300',   texto: 'text-red-600' },
-  faltou:        { fundo: 'bg-orange-50', borda: 'border-orange-300',texto: 'text-orange-700' },
-  remarcado:     { fundo: 'bg-purple-50', borda: 'border-purple-300',texto: 'text-purple-700' },
+  agendado:      { fundo: 'bg-blue-50 dark:bg-blue-900/40',   borda: 'border-blue-400',  texto: 'text-blue-800 dark:text-blue-300' },
+  confirmado:    { fundo: 'bg-green-50 dark:bg-green-900/40',  borda: 'border-green-400', texto: 'text-green-800 dark:text-green-300' },
+  em_atendimento:{ fundo: 'bg-yellow-50 dark:bg-yellow-900/40', borda: 'border-yellow-400',texto: 'text-yellow-800 dark:text-yellow-300' },
+  concluido:     { fundo: 'bg-gray-100 dark:bg-slate-800',  borda: 'border-gray-300',  texto: 'text-gray-600 dark:text-slate-400' },
+  cancelado:     { fundo: 'bg-red-50 dark:bg-red-900/40',    borda: 'border-red-300 dark:border-red-700',   texto: 'text-red-600 dark:text-red-400' },
+  faltou:        { fundo: 'bg-orange-50 dark:bg-orange-900/40', borda: 'border-orange-300 dark:border-orange-700',texto: 'text-orange-700 dark:text-orange-400' },
+  remarcado:     { fundo: 'bg-purple-50 dark:bg-purple-900/40', borda: 'border-purple-300 dark:border-purple-700',texto: 'text-purple-700 dark:text-purple-400' },
 }
 
 // Converte uma data/hora para posição em pixels na grade
@@ -143,9 +143,9 @@ export function CalendarioDia({
   return (
     <div className="flex overflow-x-auto min-h-0 relative select-none">
       {/* Coluna de horas */}
-      <div className="flex-shrink-0 w-14 border-r border-gray-200 bg-white sticky left-0 z-10">
+      <div className="flex-shrink-0 w-14 border-r border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 sticky left-0 z-10">
         {/* Espaço do cabeçalho */}
-        <div className="h-10 border-b border-gray-200" />
+        <div className="h-10 border-b border-gray-200 dark:border-slate-700" />
         <div style={{ height: TOTAL_HORAS * ALTURA_HORA_PX }} className="relative">
           {horasGrade.map((hora) => (
             <div
@@ -234,17 +234,17 @@ function ColunaMedico({
   }
 
   return (
-    <div className="flex-1 min-w-[160px] border-r border-gray-200 last:border-r-0">
+    <div className="flex-1 min-w-[160px] border-r border-gray-200 dark:border-slate-700 last:border-r-0">
       {/* Cabeçalho do médico */}
       <div
-        className="h-10 flex items-center justify-center gap-2 border-b border-gray-200 px-2 sticky top-0 bg-white z-10"
+        className="h-10 flex items-center justify-center gap-2 border-b border-gray-200 dark:border-slate-700 px-2 sticky top-0 bg-white dark:bg-slate-800 z-10"
         style={{ borderTop: `3px solid ${medico.cor_agenda}` }}
       >
         <div
           className="w-2.5 h-2.5 rounded-full flex-shrink-0"
           style={{ backgroundColor: medico.cor_agenda }}
         />
-        <span className="text-xs font-semibold text-gray-700 truncate">{medico.nome}</span>
+        <span className="text-xs font-semibold text-gray-700 dark:text-slate-300 truncate">{medico.nome}</span>
       </div>
 
       {/* Área da grade com consultas */}
@@ -260,7 +260,7 @@ function ColunaMedico({
         {horasGrade.map((hora) => (
           <div
             key={hora}
-            className="absolute left-0 right-0 border-t border-gray-100"
+            className="absolute left-0 right-0 border-t border-gray-100 dark:border-slate-800"
             style={{ top: (hora - HORA_INICIO) * ALTURA_HORA_PX }}
           />
         ))}
@@ -365,9 +365,9 @@ function ConsultaNaGrade({
       {consulta.risco && alturaPx > 56 && (
         <span className={`
           inline-block text-[9px] px-1 py-0.5 rounded font-semibold mt-0.5
-          ${consulta.risco.nivel === 'alto' ? 'bg-red-200 text-red-800' :
-            consulta.risco.nivel === 'medio' ? 'bg-amber-200 text-amber-800' :
-            'bg-green-200 text-green-800'}
+          ${consulta.risco.nivel === 'alto' ? 'bg-red-200 text-red-800 dark:text-red-300' :
+            consulta.risco.nivel === 'medio' ? 'bg-amber-200 text-amber-800 dark:text-amber-300' :
+            'bg-green-200 text-green-800 dark:text-green-300'}
         `}>
           {consulta.risco.probabilidade}% falta
         </span>
@@ -392,7 +392,7 @@ function LinhaHoraAtual({ data }: { data: string }) {
       className="absolute left-14 right-0 flex items-center pointer-events-none z-20"
       style={{ top: topPx }}
     >
-      <div className="w-2.5 h-2.5 rounded-full bg-red-500 -ml-1.5 flex-shrink-0" />
+      <div className="w-2.5 h-2.5 rounded-full bg-red-50 dark:bg-red-900/400 -ml-1.5 flex-shrink-0" />
       <div className="flex-1 border-t-2 border-red-500" />
     </div>
   )

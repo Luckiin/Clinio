@@ -27,9 +27,9 @@ interface PropsAlerteRiscoFalta {
 }
 
 const COR_RISCO = (prob: number) => {
-  if (prob >= 70) return { borda: 'border-red-300', fundo: 'bg-red-50', texto: 'text-red-700', badge: 'bg-red-600' }
-  if (prob >= 50) return { borda: 'border-orange-300', fundo: 'bg-orange-50', texto: 'text-orange-700', badge: 'bg-orange-500' }
-  return { borda: 'border-yellow-300', fundo: 'bg-yellow-50', texto: 'text-yellow-700', badge: 'bg-yellow-500' }
+  if (prob >= 70) return { borda: 'border-red-300 dark:border-red-700', fundo: 'bg-red-50 dark:bg-red-900/40', texto: 'text-red-700 dark:text-red-400', badge: 'bg-red-600' }
+  if (prob >= 50) return { borda: 'border-orange-300 dark:border-orange-700', fundo: 'bg-orange-50 dark:bg-orange-900/40', texto: 'text-orange-700 dark:text-orange-400', badge: 'bg-orange-50 dark:bg-orange-900/400' }
+  return { borda: 'border-yellow-300 dark:border-yellow-700', fundo: 'bg-yellow-50 dark:bg-yellow-900/40', texto: 'text-yellow-700 dark:text-yellow-400', badge: 'bg-yellow-50 dark:bg-yellow-900/400' }
 }
 
 export function AlerteRiscoFalta({
@@ -92,7 +92,7 @@ export function AlerteRiscoFalta({
 
       {/* Lista */}
       {expandido && (
-        <div className="divide-y divide-gray-100 bg-white">
+        <div className="divide-y divide-gray-100 bg-white dark:bg-slate-800">
           {visiveis.map((consulta) => {
             const c = COR_RISCO(consulta.probabilidade)
             const acao = processando[consulta.consulta_id]
@@ -111,8 +111,8 @@ export function AlerteRiscoFalta({
                   {/* Info da consulta */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-gray-800 text-sm">{consulta.paciente_nome}</span>
-                      <span className="text-xs text-gray-500">{consulta.hora}</span>
+                      <span className="font-semibold text-gray-800 dark:text-slate-200 text-sm">{consulta.paciente_nome}</span>
+                      <span className="text-xs text-gray-500 dark:text-slate-400">{consulta.hora}</span>
                       {consulta.medico_nome && (
                         <span className="text-xs text-gray-400">— {consulta.medico_nome}</span>
                       )}
@@ -121,7 +121,7 @@ export function AlerteRiscoFalta({
                     {consulta.paciente_telefone && (
                       <div className="flex items-center gap-1 mt-0.5">
                         <Phone className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 dark:text-slate-400">
                           {formatarTelefone(consulta.paciente_telefone)}
                         </span>
                       </div>
@@ -149,7 +149,7 @@ export function AlerteRiscoFalta({
                         onClick={() => enviarLembrete(consulta.consulta_id)}
                         disabled={!!acao}
                         title="Enviar lembrete agora"
-                        className="flex items-center gap-1 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-1 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400 px-2 py-1 rounded-lg transition-colors disabled:opacity-50"
                       >
                         {acao === 'lembrando' ? (
                           <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
@@ -165,7 +165,7 @@ export function AlerteRiscoFalta({
                         onClick={() => confirmar(consulta.consulta_id)}
                         disabled={!!acao}
                         title="Marcar como confirmado"
-                        className="flex items-center gap-1 text-xs bg-green-50 hover:bg-green-100 text-green-700 px-2 py-1 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1 text-xs bg-green-50 dark:bg-green-900/40 hover:bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400 px-2 py-1 rounded-lg transition-colors disabled:opacity-50"
                       >
                         {acao === 'confirmando' ? (
                           <span className="w-3 h-3 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
@@ -179,7 +179,7 @@ export function AlerteRiscoFalta({
                     <button
                       onClick={() => setDescartados((d) => new Set([...Array.from(d), consulta.consulta_id]))}
                       title="Dispensar alerta"
-                      className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-lg transition-colors"
+                      className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:text-slate-400 px-2 py-1 rounded-lg transition-colors"
                     >
                       <X className="w-3 h-3" />
                       Ignorar

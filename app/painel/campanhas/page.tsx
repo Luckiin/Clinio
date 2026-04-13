@@ -12,12 +12,12 @@ import { formatarData, formatarDataHora } from '@/lib/formatadores'
 import type { Campanha, StatusCampanha, TipoCampanha, CanalComunicacao } from '@/tipos'
 
 const coresStatus: Record<StatusCampanha, string> = {
-  rascunho: 'bg-gray-100 text-gray-600',
-  agendada: 'bg-blue-100 text-blue-700',
-  enviando: 'bg-yellow-100 text-yellow-700',
-  concluida: 'bg-green-100 text-green-700',
-  cancelada: 'bg-red-100 text-red-700',
-  pausada: 'bg-orange-100 text-orange-700',
+  rascunho: 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400',
+  agendada: 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400',
+  enviando: 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400',
+  concluida: 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400',
+  cancelada: 'bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-400',
+  pausada: 'bg-orange-100 dark:bg-orange-900/60 text-orange-700 dark:text-orange-400',
 }
 
 const rotulosStatus: Record<StatusCampanha, string> = {
@@ -111,8 +111,8 @@ export default function PaginaCampanhas() {
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Campanhas</h1>
-          <p className="text-gray-500 text-sm">Marketing e comunicação com pacientes</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Campanhas</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm">Marketing e comunicação com pacientes</p>
         </div>
         <BotaoAcao
           variante="primario"
@@ -132,7 +132,7 @@ export default function PaginaCampanhas() {
             className={`text-sm px-3 py-1.5 rounded-lg border font-medium transition-colors ${
               filtroStatus === s
                 ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:bg-slate-900/50'
             }`}
           >
             {s === '' ? 'Todas' : rotulosStatus[s]}
@@ -144,9 +144,9 @@ export default function PaginaCampanhas() {
       {carregando ? (
         <div className="text-center py-16 text-gray-400">Carregando campanhas...</div>
       ) : campanhas.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border border-gray-100">
+        <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-800">
           <Megaphone className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-gray-500 font-medium mb-2">Nenhuma campanha criada</h3>
+          <h3 className="text-gray-500 dark:text-slate-400 font-medium mb-2">Nenhuma campanha criada</h3>
           <p className="text-sm text-gray-400 mb-6">
             Crie campanhas para se comunicar com seus pacientes
           </p>
@@ -164,9 +164,9 @@ export default function PaginaCampanhas() {
             <div key={campanha.id} className="cartao hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{campanha.nome}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-slate-100">{campanha.nome}</h3>
                   {campanha.descricao && (
-                    <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{campanha.descricao}</p>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5 line-clamp-1">{campanha.descricao}</p>
                   )}
                 </div>
                 <span className={`badge ${coresStatus[campanha.status]}`}>
@@ -177,44 +177,44 @@ export default function PaginaCampanhas() {
               {/* Canal e tipo */}
               <div className="flex items-center gap-3 mb-4">
                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  campanha.canal === 'whatsapp' ? 'bg-green-100 text-green-700' :
-                  campanha.canal === 'email' ? 'bg-blue-100 text-blue-700' :
-                  'bg-purple-100 text-purple-700'
+                  campanha.canal === 'whatsapp' ? 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400' :
+                  campanha.canal === 'email' ? 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400' :
+                  'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-400'
                 }`}>
                   {campanha.canal === 'whatsapp' ? '📱 WhatsApp' :
                    campanha.canal === 'email' ? '📧 Email' : '💬 SMS'}
                 </span>
-                <span className="text-xs text-gray-500 capitalize">{campanha.tipo}</span>
+                <span className="text-xs text-gray-500 dark:text-slate-400 capitalize">{campanha.tipo}</span>
               </div>
 
               {/* Métricas */}
-              <div className="grid grid-cols-3 gap-2 py-3 border-y border-gray-100 mb-4">
+              <div className="grid grid-cols-3 gap-2 py-3 border-y border-gray-100 dark:border-slate-800 mb-4">
                 <div className="text-center">
-                  <p className="text-lg font-bold text-gray-800">{campanha.total_destinatarios}</p>
-                  <p className="text-xs text-gray-500">Destinatários</p>
+                  <p className="text-lg font-bold text-gray-800 dark:text-slate-200">{campanha.total_destinatarios}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">Destinatários</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-bold text-blue-600">{campanha.total_enviadas}</p>
-                  <p className="text-xs text-gray-500">Enviadas</p>
+                  <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{campanha.total_enviadas}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">Enviadas</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-bold text-green-600">{campanha.total_lidas}</p>
-                  <p className="text-xs text-gray-500">Lidas</p>
+                  <p className="text-lg font-bold text-green-600 dark:text-green-400">{campanha.total_lidas}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">Lidas</p>
                 </div>
               </div>
 
               {/* Taxa de abertura */}
               {campanha.total_enviadas > 0 && (
                 <div className="mb-4">
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-slate-400 mb-1">
                     <span>Taxa de abertura</span>
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium text-gray-700 dark:text-slate-300">
                       {Math.round((campanha.total_lidas / campanha.total_enviadas) * 100)}%
                     </span>
                   </div>
-                  <div className="h-1.5 bg-gray-100 rounded-full">
+                  <div className="h-1.5 bg-gray-100 dark:bg-slate-800 rounded-full">
                     <div
-                      className="h-1.5 bg-green-500 rounded-full"
+                      className="h-1.5 bg-green-50 dark:bg-green-900/400 rounded-full"
                       style={{
                         width: `${Math.round((campanha.total_lidas / campanha.total_enviadas) * 100)}%`
                       }}
@@ -232,12 +232,12 @@ export default function PaginaCampanhas() {
 
               {/* Ações */}
               <div className="flex gap-2">
-                <button className="flex-1 text-xs flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors">
+                <button className="flex-1 text-xs flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-gray-50 dark:bg-slate-900/50 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:bg-slate-800 transition-colors">
                   <Eye className="w-3.5 h-3.5" />
                   Ver detalhes
                 </button>
                 {campanha.status === 'rascunho' && (
-                  <button className="flex-1 text-xs flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                  <button className="flex-1 text-xs flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:bg-blue-900/60 transition-colors">
                     <Send className="w-3.5 h-3.5" />
                     Enviar agora
                   </button>
@@ -251,12 +251,12 @@ export default function PaginaCampanhas() {
       {/* Modal: Nova Campanha */}
       {modalNovaCampanha && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900">Nova Campanha</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Nova Campanha</h2>
               <button
                 onClick={() => setModalNovaCampanha(false)}
-                className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 text-xl font-bold"
               >
                 ×
               </button>
@@ -314,7 +314,7 @@ export default function PaginaCampanhas() {
                       const template = templates[`${formCampanha.tipo}`] || templates['marketing']
                       setFormCampanha({ ...formCampanha, mensagem_template: template })
                     }}
-                    className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-300 font-medium"
                   >
                     Usar template padrão
                   </button>
@@ -346,7 +346,7 @@ export default function PaginaCampanhas() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-slate-800">
               <BotaoAcao
                 variante="secundario"
                 onClick={() => setModalNovaCampanha(false)}

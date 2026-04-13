@@ -20,9 +20,9 @@ interface PropsBotaoAcao extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const estilosVariante: Record<VarianteBotao, string> = {
   primario: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm',
-  secundario: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm',
+  secundario: 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:bg-slate-900/50 text-gray-700 dark:text-slate-300 border border-gray-300 shadow-sm',
   perigo: 'bg-red-600 hover:bg-red-700 text-white shadow-sm',
-  fantasma: 'hover:bg-gray-100 text-gray-600',
+  fantasma: 'hover:bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400',
   sucesso: 'bg-green-600 hover:bg-green-700 text-white shadow-sm',
 }
 

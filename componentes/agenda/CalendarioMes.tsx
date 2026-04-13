@@ -18,13 +18,13 @@ interface PropsCalendarioMes {
 const DIAS_SEMANA_CURTO = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
 const COR_STATUS: Record<StatusConsulta, { ponto: string; fundo: string; texto: string }> = {
-  agendado:       { ponto: 'bg-blue-500',   fundo: 'bg-blue-50',   texto: 'text-blue-800' },
-  confirmado:     { ponto: 'bg-green-500',  fundo: 'bg-green-50',  texto: 'text-green-800' },
-  em_atendimento: { ponto: 'bg-yellow-500', fundo: 'bg-yellow-50', texto: 'text-yellow-800' },
-  concluido:      { ponto: 'bg-gray-400',   fundo: 'bg-gray-100',  texto: 'text-gray-600' },
-  cancelado:      { ponto: 'bg-red-400',    fundo: 'bg-red-50',    texto: 'text-red-700' },
-  faltou:         { ponto: 'bg-orange-400', fundo: 'bg-orange-50', texto: 'text-orange-700' },
-  remarcado:      { ponto: 'bg-purple-400', fundo: 'bg-purple-50', texto: 'text-purple-700' },
+  agendado:       { ponto: 'bg-blue-50 dark:bg-blue-900/400',   fundo: 'bg-blue-50 dark:bg-blue-900/40',   texto: 'text-blue-800 dark:text-blue-300' },
+  confirmado:     { ponto: 'bg-green-50 dark:bg-green-900/400',  fundo: 'bg-green-50 dark:bg-green-900/40',  texto: 'text-green-800 dark:text-green-300' },
+  em_atendimento: { ponto: 'bg-yellow-50 dark:bg-yellow-900/400', fundo: 'bg-yellow-50 dark:bg-yellow-900/40', texto: 'text-yellow-800 dark:text-yellow-300' },
+  concluido:      { ponto: 'bg-gray-400',   fundo: 'bg-gray-100 dark:bg-slate-800',  texto: 'text-gray-600 dark:text-slate-400' },
+  cancelado:      { ponto: 'bg-red-400',    fundo: 'bg-red-50 dark:bg-red-900/40',    texto: 'text-red-700 dark:text-red-400' },
+  faltou:         { ponto: 'bg-orange-400', fundo: 'bg-orange-50 dark:bg-orange-900/40', texto: 'text-orange-700 dark:text-orange-400' },
+  remarcado:      { ponto: 'bg-purple-400', fundo: 'bg-purple-50 dark:bg-purple-900/40', texto: 'text-purple-700 dark:text-purple-400' },
 }
 
 export function CalendarioMes({
@@ -65,13 +65,13 @@ export function CalendarioMes({
   const MAX_VISIVEIS = 3 // máximo de consultas exibidas por célula
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col h-full">
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col h-full">
       {/* Cabeçalho dos dias da semana */}
-      <div className="grid grid-cols-7 border-b border-gray-200">
+      <div className="grid grid-cols-7 border-b border-gray-200 dark:border-slate-700">
         {DIAS_SEMANA_CURTO.map((d) => (
           <div
             key={d}
-            className="py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide"
+            className="py-2 text-center text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide"
           >
             {d}
           </div>
@@ -88,7 +88,7 @@ export function CalendarioMes({
             return (
               <div
                 key={`vazio-${idx}`}
-                className="border-b border-r border-gray-100 bg-gray-50 last:border-r-0"
+                className="border-b border-r border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 last:border-r-0"
               />
             )
           }
@@ -104,25 +104,25 @@ export function CalendarioMes({
             <div
               key={dataStr}
               className={`
-                border-b border-r border-gray-100 last:border-r-0 flex flex-col
-                ${ehFimDeSemana ? 'bg-gray-50/50' : 'bg-white'}
+                border-b border-r border-gray-100 dark:border-slate-800 last:border-r-0 flex flex-col
+                ${ehFimDeSemana ? 'bg-gray-50/50' : 'bg-white dark:bg-slate-800'}
                 ${ehHoje ? 'ring-1 ring-inset ring-blue-400' : ''}
               `}
             >
               {/* Número do dia */}
               <button
                 onClick={() => aoClicarDia(dataStr)}
-                className="flex items-start justify-between px-2 pt-1.5 pb-0.5 hover:bg-gray-50 transition-colors group"
+                className="flex items-start justify-between px-2 pt-1.5 pb-0.5 hover:bg-gray-50 dark:bg-slate-900/50 transition-colors group"
               >
                 <span
                   className={`
                     text-sm font-semibold leading-none w-6 h-6 flex items-center justify-center rounded-full
-                    transition-colors group-hover:bg-blue-100 group-hover:text-blue-700
+                    transition-colors group-hover:bg-blue-100 dark:bg-blue-900/60 group-hover:text-blue-700 dark:text-blue-400
                     ${ehHoje
                       ? 'bg-blue-600 text-white group-hover:bg-blue-700 group-hover:text-white'
                       : ehFimDeSemana
                         ? 'text-gray-400'
-                        : 'text-gray-800'
+                        : 'text-gray-800 dark:text-slate-200'
                     }
                   `}
                 >
@@ -165,7 +165,7 @@ export function CalendarioMes({
                 {excedente > 0 && (
                   <button
                     onClick={() => aoClicarDia(dataStr)}
-                    className="w-full text-[11px] text-blue-600 hover:underline text-left px-1.5"
+                    className="w-full text-[11px] text-blue-600 dark:text-blue-400 hover:underline text-left px-1.5"
                   >
                     +{excedente} mais
                   </button>
@@ -175,7 +175,7 @@ export function CalendarioMes({
                 {total === 0 && (
                   <button
                     onClick={() => aoClicarDia(dataStr)}
-                    className="w-full h-full min-h-[24px] rounded hover:bg-blue-50 transition-colors"
+                    className="w-full h-full min-h-[24px] rounded hover:bg-blue-50 dark:bg-blue-900/40 transition-colors"
                     title="Agendar neste dia"
                   />
                 )}
@@ -186,7 +186,7 @@ export function CalendarioMes({
       </div>
 
       {/* Legenda de status */}
-      <div className="border-t border-gray-100 px-4 py-2 flex flex-wrap gap-x-4 gap-y-1">
+      <div className="border-t border-gray-100 dark:border-slate-800 px-4 py-2 flex flex-wrap gap-x-4 gap-y-1">
         {(
           [
             ['agendado', 'Agendado'],
@@ -197,7 +197,7 @@ export function CalendarioMes({
             ['faltou', 'Faltou'],
           ] as [StatusConsulta, string][]
         ).map(([status, label]) => (
-          <span key={status} className="flex items-center gap-1 text-[11px] text-gray-500">
+          <span key={status} className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-slate-400">
             <span className={`w-2 h-2 rounded-full ${COR_STATUS[status].ponto}`} />
             {label}
           </span>

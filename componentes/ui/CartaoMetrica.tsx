@@ -23,14 +23,14 @@ export function CartaoMetrica({
   variacao,
   descricaoVariacao,
   icone,
-  corIcone = 'text-blue-600',
+  corIcone = 'text-blue-600 dark:text-blue-400',
   carregando = false,
 }: PropsCartaoMetrica) {
   const variacaoPositiva = variacao !== undefined && variacao >= 0
 
   if (carregando) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 animate-pulse">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 animate-pulse">
         <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
         <div className="h-8 bg-gray-200 rounded w-3/4 mb-2" />
         <div className="h-3 bg-gray-200 rounded w-1/3" />
@@ -39,11 +39,11 @@ export function CartaoMetrica({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-500 mb-1">{titulo}</p>
-          <p className="text-2xl font-bold text-gray-900">{valor}</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-slate-400 mb-1">{titulo}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{valor}</p>
 
           {variacao !== undefined && (
             <div className="flex items-center gap-1 mt-2">
@@ -52,7 +52,7 @@ export function CartaoMetrica({
               ) : (
                 <TrendingDown className="w-4 h-4 text-red-500" />
               )}
-              <span className={`text-sm font-medium ${variacaoPositiva ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-sm font-medium ${variacaoPositiva ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {variacao > 0 ? '+' : ''}{variacao?.toFixed(1)}%
               </span>
               {descricaoVariacao && (
@@ -62,7 +62,7 @@ export function CartaoMetrica({
           )}
         </div>
 
-        <div className={`p-3 rounded-xl bg-gray-50 ${corIcone}`}>
+        <div className={`p-3 rounded-xl bg-gray-50 dark:bg-slate-900/50 ${corIcone}`}>
           {icone}
         </div>
       </div>

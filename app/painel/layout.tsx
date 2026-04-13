@@ -33,7 +33,7 @@ export default async function LayoutPainel({
   const perfil = usuario?.perfil
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50/50 selection:bg-primaria-200 selection:text-primaria-900">
+    <div className="flex h-screen overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 selection:bg-primaria-200 selection:text-primaria-900">
       {/* Barra lateral */}
       <BarraLateral
         nomeClinica={nomeClinica}

@@ -63,22 +63,22 @@ export default function PaginaRelatorios() {
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Relatórios Gerenciais</h1>
-          <p className="text-slate-500 text-sm">Visão panorâmica da clínica</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Relatórios Gerenciais</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">Visão panorâmica da clínica</p>
         </div>
         
         {/* Filtro por Datas */}
-        <form onSubmit={aplicarFiltro} className="flex bg-white items-center gap-2 p-1 rounded-xl shadow-sm border border-slate-200">
+        <form onSubmit={aplicarFiltro} className="flex bg-white dark:bg-slate-800 items-center gap-2 p-1 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <input 
             type="date" 
-            className="text-sm bg-transparent border-0 ring-0 text-slate-600 focus:ring-0 cursor-pointer"
+            className="text-sm bg-transparent border-0 ring-0 text-slate-600 dark:text-slate-400 focus:ring-0 cursor-pointer"
             value={dataInicio}
             onChange={e => setDataInicio(e.target.value)}
           />
           <span className="text-slate-300">ate</span>
           <input 
             type="date" 
-            className="text-sm bg-transparent border-0 ring-0 text-slate-600 focus:ring-0 cursor-pointer"
+            className="text-sm bg-transparent border-0 ring-0 text-slate-600 dark:text-slate-400 focus:ring-0 cursor-pointer"
             value={dataFim}
             onChange={e => setDataFim(e.target.value)}
           />
@@ -99,16 +99,16 @@ export default function PaginaRelatorios() {
             <CartaoMetrica
               titulo="Faturamento no Período"
               valor={formatarMoeda(dados.indicadores.faturamentoPeriodo)}
-              icone={<DollarSign className="w-6 h-6 text-green-600" />}
-              corIcone="bg-green-50 text-green-600"
+              icone={<DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />}
+              corIcone="bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400"
               descricaoVariacao={`R$ ${dados.indicadores.faturamentoDia} faturados hoje`}
               variacao={100} // Apenas forçando exibição do descritivo
             />
             <CartaoMetrica
               titulo="Volume de Consultas"
               valor={dados.indicadores.consultasPeriodo}
-              icone={<Calendar className="w-6 h-6 text-blue-600" />}
-              corIcone="bg-blue-50 text-blue-600"
+              icone={<Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
+              corIcone="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
               descricaoVariacao={`${dados.indicadores.consultasDia} agendadas p/ hoje`}
               variacao={100}
             />
@@ -116,7 +116,7 @@ export default function PaginaRelatorios() {
               titulo="Taxa de Faltas"
               valor={`${dados.indicadores.taxaFaltas}%`}
               icone={<AlertTriangle className="w-6 h-6 text-red-500" />}
-              corIcone="bg-red-50 text-red-500"
+              corIcone="bg-red-50 dark:bg-red-900/40 text-red-500"
               descricaoVariacao="Baseado nos status 'Faltou'"
               variacao={-dados.indicadores.taxaFaltas}
             />
@@ -138,10 +138,10 @@ export default function PaginaRelatorios() {
                   return (
                     <div key={med.nome} className="group">
                       <div className="flex justify-between text-sm mb-1.5">
-                        <span className="font-semibold text-slate-700">{med.nome}</span>
-                        <span className="font-bold text-slate-900">{formatarMoeda(med.valor)}</span>
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">{med.nome}</span>
+                        <span className="font-bold text-slate-900 dark:text-slate-100">{formatarMoeda(med.valor)}</span>
                       </div>
-                      <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-primaria-500 group-hover:bg-primaria-400 rounded-full transition-all duration-1000"
                           style={{ width: `${percentual}%` }}
@@ -173,7 +173,7 @@ export default function PaginaRelatorios() {
                         className="w-full bg-emerald-200 group-hover:bg-emerald-400 rounded-t-md transition-all duration-1000 relative"
                         style={{ height: `${Math.max(10, altura)}%` }}
                       />
-                      <span className="text-[10px] text-slate-500 mt-2 rotate-45 transform origin-left whitespace-nowrap">
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 rotate-45 transform origin-left whitespace-nowrap">
                         {horario.hora}
                       </span>
                     </div>
@@ -191,7 +191,7 @@ export default function PaginaRelatorios() {
                   <span className="text-primaria-300 text-sm">pacientes captados no período</span>
                 </div>
               </div>
-              <Users className="w-16 h-16 text-slate-700/50 hidden sm:block" />
+              <Users className="w-16 h-16 text-slate-700 dark:text-slate-300/50 hidden sm:block" />
             </div>
 
           </div>

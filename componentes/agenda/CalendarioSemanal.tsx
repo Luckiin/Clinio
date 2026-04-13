@@ -20,7 +20,7 @@ const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
 const COR_STATUS: Record<StatusConsulta, string> = {
   agendado:      'bg-blue-400',
-  confirmado:    'bg-green-500',
+  confirmado:    'bg-green-50 dark:bg-green-900/400',
   em_atendimento:'bg-yellow-400',
   concluido:     'bg-gray-400',
   cancelado:     'bg-red-400',
@@ -51,7 +51,7 @@ export function CalendarioSemanal({
   }
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-xl overflow-hidden border border-gray-200">
+    <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700">
       {dias.map((dia, i) => {
         const dataStr = dia.toISOString().split('T')[0]
         const ehHoje = dataStr === hoje
@@ -61,25 +61,25 @@ export function CalendarioSemanal({
         return (
           <div
             key={dataStr}
-            className="bg-white flex flex-col min-h-[180px]"
+            className="bg-white dark:bg-slate-800 flex flex-col min-h-[180px]"
           >
             {/* Cabeçalho do dia */}
             <button
               onClick={() => aoClicarDia(dataStr)}
               className={`
-                w-full px-2 pt-2 pb-1.5 text-center border-b border-gray-100
-                hover:bg-gray-50 transition-colors
-                ${ehHoje ? 'bg-blue-50' : ''}
+                w-full px-2 pt-2 pb-1.5 text-center border-b border-gray-100 dark:border-slate-800
+                hover:bg-gray-50 dark:bg-slate-900/50 transition-colors
+                ${ehHoje ? 'bg-blue-50 dark:bg-blue-900/40' : ''}
               `}
             >
-              <p className={`text-xs font-medium ${ehHoje ? 'text-blue-600' : 'text-gray-500'}`}>
+              <p className={`text-xs font-medium ${ehHoje ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-slate-400'}`}>
                 {DIAS_SEMANA[dia.getDay()]}
               </p>
               <p className={`
                 text-lg font-bold leading-tight
                 ${ehHoje
                   ? 'w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center mx-auto mt-0.5'
-                  : 'text-gray-800'
+                  : 'text-gray-800 dark:text-slate-200'
                 }
               `}>
                 {dia.getDate()}
@@ -116,7 +116,7 @@ export function CalendarioSemanal({
               {consultasDia.length > 5 && (
                 <button
                   onClick={() => aoClicarDia(dataStr)}
-                  className="w-full text-xs text-blue-600 text-center py-0.5 hover:underline"
+                  className="w-full text-xs text-blue-600 dark:text-blue-400 text-center py-0.5 hover:underline"
                 >
                   +{consultasDia.length - 5} mais
                 </button>

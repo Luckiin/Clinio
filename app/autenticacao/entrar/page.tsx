@@ -63,16 +63,16 @@ export default function PaginaEntrar() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg">
             <Stethoscope className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Clinio</h1>
-          <p className="text-gray-500 mt-1">Gestão inteligente de clínicas</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Clinio</h1>
+          <p className="text-gray-500 dark:text-slate-400 mt-1">Gestão inteligente de clínicas</p>
         </div>
 
         {/* Formulário */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Entrar na sua conta</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 p-8">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-200 mb-6">Entrar na sua conta</h2>
 
           {erro && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-5 text-sm text-red-700 animar-fade-in">
+            <div className="bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-5 text-sm text-red-700 dark:text-red-400 animar-fade-in">
               {erro}
             </div>
           )}
@@ -103,7 +103,7 @@ export default function PaginaEntrar() {
                 </label>
                 <Link
                   href="/recuperar-senha"
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-300 font-medium"
                 >
                   Esqueceu a senha?
                 </Link>
@@ -122,7 +122,7 @@ export default function PaginaEntrar() {
                 <button
                   type="button"
                   onClick={() => setSenhaVisivel(!senhaVisivel)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400"
                   aria-label={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
                 >
                   {senhaVisivel ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -144,9 +144,9 @@ export default function PaginaEntrar() {
         </div>
 
         {/* Rodapé */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-500 dark:text-slate-400 mt-6">
           Precisa de uma conta?{' '}
-          <Link href="/registrar" className="text-blue-600 hover:text-blue-800 font-medium">
+          <Link href="/registrar" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-300 font-medium">
             Cadastre sua clínica
           </Link>
         </p>

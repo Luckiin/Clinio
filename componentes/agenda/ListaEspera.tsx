@@ -39,9 +39,9 @@ interface PropsListaEspera {
 }
 
 const COR_PRIORIDADE: Record<number, string> = {
-  1: 'bg-red-100 text-red-700 border-red-200',
-  2: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  3: 'bg-green-100 text-green-700 border-green-200',
+  1: 'bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
+  2: 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
+  3: 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800',
 }
 
 const LABEL_PRIORIDADE: Record<number, string> = {
@@ -125,25 +125,25 @@ export function ListaEspera({
   if (itensAtivos.length === 0 && !carregando) return null
 
   return (
-    <div className="bg-white rounded-xl border border-amber-200 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-amber-200 dark:border-amber-800 shadow-sm overflow-hidden">
       {/* Cabeçalho */}
       <button
         onClick={() => setExpandido((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 hover:bg-amber-100 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-900/40 hover:bg-amber-100 dark:bg-amber-900/60 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-600" />
-          <span className="font-semibold text-amber-800 text-sm">
+          <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <span className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
             Lista de Espera
           </span>
-          <span className="bg-amber-200 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-amber-200 text-amber-800 dark:text-amber-300 text-xs font-bold px-2 py-0.5 rounded-full">
             {itensAtivos.length}
           </span>
         </div>
         {expandido ? (
-          <ChevronUp className="w-4 h-4 text-amber-600" />
+          <ChevronUp className="w-4 h-4 text-amber-600 dark:text-amber-400" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-amber-600" />
+          <ChevronDown className="w-4 h-4 text-amber-600 dark:text-amber-400" />
         )}
       </button>
 
@@ -216,20 +216,20 @@ function ItemEspera({
   }
 
   return (
-    <div className={`p-3 ${item.status === 'notificado' ? 'bg-blue-50' : 'bg-white'}`}>
+    <div className={`p-3 ${item.status === 'notificado' ? 'bg-blue-50 dark:bg-blue-900/40' : 'bg-white dark:bg-slate-800'}`}>
       <div className="flex items-start gap-2">
         {/* Controles de prioridade */}
         <div className="flex flex-col items-center gap-0.5 pt-0.5">
           <button
             onClick={aoMoverCima}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 transition-colors"
             title="Aumentar prioridade"
           >
             <ChevronUp className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={aoMoverBaixo}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 transition-colors"
             title="Diminuir prioridade"
           >
             <ChevronDown className="w-3.5 h-3.5" />
@@ -237,21 +237,21 @@ function ItemEspera({
         </div>
 
         {/* Ícone do paciente */}
-        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
           <User className="w-4 h-4 text-gray-400" />
         </div>
 
         {/* Informações */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-gray-800 text-sm truncate">
+            <span className="font-medium text-gray-800 dark:text-slate-200 text-sm truncate">
               {item.paciente?.nome}
             </span>
             <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${COR_PRIORIDADE[item.prioridade]}`}>
               {LABEL_PRIORIDADE[item.prioridade]}
             </span>
             {item.status === 'notificado' && (
-              <span className="text-xs text-blue-600 flex items-center gap-0.5">
+              <span className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-0.5">
                 <Bell className="w-3 h-3" /> Notificado
               </span>
             )}
@@ -259,19 +259,19 @@ function ItemEspera({
 
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
             {item.paciente?.telefone && (
-              <span className="text-xs text-gray-500 flex items-center gap-1">
+              <span className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1">
                 <Phone className="w-3 h-3" />
                 {formatarTelefone(item.paciente.telefone)}
               </span>
             )}
             {item.medico && (
-              <span className="text-xs text-gray-500">Dr. {item.medico.nome}</span>
+              <span className="text-xs text-gray-500 dark:text-slate-400">Dr. {item.medico.nome}</span>
             )}
             {item.tipo_consulta && (
-              <span className="text-xs text-gray-500">{item.tipo_consulta.nome}</span>
+              <span className="text-xs text-gray-500 dark:text-slate-400">{item.tipo_consulta.nome}</span>
             )}
             {item.data_preferida && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-slate-400">
                 Pref: {new Date(item.data_preferida + 'T00:00:00').toLocaleDateString('pt-BR')}
               </span>
             )}
@@ -299,7 +299,7 @@ function ItemEspera({
               </button>
               <button
                 onClick={() => setMostrarEncaixe(false)}
-                className="text-xs text-gray-400 hover:text-gray-600"
+                className="text-xs text-gray-400 hover:text-gray-600 dark:text-slate-400"
               >
                 Cancelar
               </button>
@@ -314,7 +314,7 @@ function ItemEspera({
               onClick={aoNotificar}
               disabled={notificando}
               title="Notificar paciente"
-              className="p-1.5 rounded-lg hover:bg-amber-100 text-amber-600 hover:text-amber-700 transition-colors disabled:opacity-50"
+              className="p-1.5 rounded-lg hover:bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:text-amber-400 transition-colors disabled:opacity-50"
             >
               <Bell className="w-3.5 h-3.5" />
             </button>
@@ -325,7 +325,7 @@ function ItemEspera({
               onClick={() => setMostrarEncaixe(true)}
               disabled={encaixando}
               title="Encaixar agora"
-              className="p-1.5 rounded-lg hover:bg-green-100 text-green-600 hover:text-green-700 transition-colors disabled:opacity-50"
+              className="p-1.5 rounded-lg hover:bg-green-100 dark:bg-green-900/60 text-green-600 dark:text-green-400 hover:text-green-700 dark:text-green-400 transition-colors disabled:opacity-50"
             >
               <Zap className="w-3.5 h-3.5" />
             </button>
@@ -334,7 +334,7 @@ function ItemEspera({
           <button
             onClick={aoRemover}
             title="Remover da lista"
-            className="p-1.5 rounded-lg hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-red-100 dark:bg-red-900/60 text-gray-400 hover:text-red-600 dark:text-red-400 transition-colors"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -410,10 +410,10 @@ export function ModalAdicionarEspera({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">Adicionar à Lista de Espera</h2>
-          <button onClick={aoFechar} className="text-gray-400 hover:text-gray-600">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-slate-800">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Adicionar à Lista de Espera</h2>
+          <button onClick={aoFechar} className="text-gray-400 hover:text-gray-600 dark:text-slate-400">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -423,14 +423,14 @@ export function ModalAdicionarEspera({
           <div>
             <label className="campo-label">Paciente *</label>
             {pacienteSelecionado ? (
-              <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+              <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2">
                 <div>
-                  <p className="text-sm font-medium text-blue-800">{pacienteSelecionado.nome}</p>
-                  <p className="text-xs text-blue-600">{pacienteSelecionado.telefone}</p>
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300">{pacienteSelecionado.nome}</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">{pacienteSelecionado.telefone}</p>
                 </div>
                 <button
                   onClick={() => { setPacienteSelecionado(null); setBuscaPaciente('') }}
-                  className="text-blue-400 hover:text-blue-600"
+                  className="text-blue-400 hover:text-blue-600 dark:text-blue-400"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -445,15 +445,15 @@ export function ModalAdicionarEspera({
                   className="campo-input"
                 />
                 {resultadosBusca.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 z-10 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
                     {resultadosBusca.map((p) => (
                       <button
                         key={p.id}
                         onClick={() => { setPacienteSelecionado(p); setBuscaPaciente(''); setResultadosBusca([]) }}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:bg-slate-900/50 transition-colors"
                       >
-                        <p className="text-sm font-medium text-gray-800">{p.nome}</p>
-                        <p className="text-xs text-gray-500">{p.telefone}</p>
+                        <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{p.nome}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{p.telefone}</p>
                       </button>
                     ))}
                   </div>
@@ -516,7 +516,7 @@ export function ModalAdicionarEspera({
           </div>
         </div>
 
-        <div className="flex gap-3 p-5 border-t border-gray-100">
+        <div className="flex gap-3 p-5 border-t border-gray-100 dark:border-slate-800">
           <button onClick={aoFechar} className="botao-secundario flex-1">
             Cancelar
           </button>

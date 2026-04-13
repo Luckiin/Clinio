@@ -566,3 +566,286 @@ export interface FormularioAgendamentoPublico {
   observacoes?: string
   clinica_slug: string
 }
+
+// ============================================================
+// CRM - Interações com Pacientes
+// ============================================================
+export type TipoInteracao =
+  | 'ligacao'
+  | 'whatsapp'
+  | 'email'
+  | 'presencial'
+  | 'anotacao'
+  | 'outro'
+
+export interface InteracaoPaciente {
+  id: string
+  clinica_id: string
+  paciente_id: string
+  usuario_id?: string
+  tipo_interacao: TipoInteracao
+  descricao: string
+  criado_em: string
+  paciente?: Paciente
+  usuario?: { nome: string; avatar_url?: string }
+}
+
+// ============================================================
+// CRM - Tags
+// ============================================================
+export interface TagCRM {
+  id: string
+  clinica_id: string
+  paciente_id: string
+  tag: string
+  cor: string
+  criado_em: string
+}
+
+// ============================================================
+// CRM - Oportunidades de Retorno
+// ============================================================
+export type TipoOportunidade =
+  | 'retorno_consulta'
+  | 'tratamento_incompleto'
+  | 'avaliacao_pendente'
+  | 'renovacao_procedimento'
+  | 'indicacao'
+  | 'reativacao'
+  | 'outro'
+
+export type StatusOportunidade = 'aberta' | 'em_contato' | 'convertida' | 'cancelada'
+export type PrioridadeOportunidade = 'baixa' | 'media' | 'alta'
+
+export interface OportunidadePaciente {
+  id: string
+  clinica_id: string
+  paciente_id: string
+  usuario_responsavel_id?: string
+  tipo_oportunidade: TipoOportunidade
+  descricao: string
+  data_retorno_prevista?: string
+  status: StatusOportunidade
+  prioridade: PrioridadeOportunidade
+  valor_estimado?: number
+  criado_em: string
+  atualizado_em: string
+  paciente?: Paciente
+  usuario_responsavel?: { nome: string }
+}
+
+// ============================================================
+// CRM - Funil de Pacientes
+// ============================================================
+export type EtapaFunil =
+  | 'interessado'
+  | 'avaliacao_marcada'
+  | 'avaliacao_realizada'
+  | 'tratamento_iniciado'
+  | 'tratamento_em_andamento'
+  | 'tratamento_finalizado'
+  | 'fidelizado'
+  | 'perdido'
+
+export interface EtapaFunilPaciente {
+  id: string
+  clinica_id: string
+  paciente_id: string
+  etapa: EtapaFunil
+  observacao?: string
+  criado_em: string
+  paciente?: Paciente
+}
+
+// ============================================================
+// CRM - Pontuação de Paciente
+// ============================================================
+export type NivelPaciente = 'bronze' | 'prata' | 'ouro' | 'diamante'
+
+export interface PontuacaoPaciente {
+  id: string
+  clinica_id: string
+  paciente_id: string
+  pontuacao_total: number
+  pontos_consultas: number
+  pontos_valor_gasto: number
+  pontos_fidelidade: number
+  pontos_indicacoes: number
+  nivel: NivelPaciente
+  calculado_em: string
+}
+
+// ============================================================
+// CRM - Conversas e Mensagens
+// ============================================================
+export type CanalConversa = 'whatsapp' | 'email' | 'sms' | 'chat_interno'
+export type StatusConversa = 'ativa' | 'resolvida' | 'arquivada'
+
+export interface Conversa {
+  id: string
+  clinica_id: string
+  paciente_id: string
+  canal: CanalConversa
+  status: StatusConversa
+  ultima_mensagem_em?: string
+  total_mensagens: number
+  nao_lidas: number
+  criado_em: string
+  atualizado_em: string
+  paciente?: Paciente
+  mensagens?: MensagemConversa[]
+}
+
+export type TipoMensagem = 'enviada' | 'recebida' | 'sistema'
+export type TipoConteudo = 'texto' | 'imagem' | 'audio' | 'documento' | 'template'
+export type StatusMensagemConversa = 'enviada' | 'entregue' | 'lida' | 'falhou'
+
+export interface MensagemConversa {
+  id: string
+  conversa_id: string
+  paciente_id: string
+  usuario_id?: string
+  tipo_mensagem: TipoMensagem
+  conteudo: string
+  tipo_conteudo: TipoConteudo
+  status_mensagem: StatusMensagemConversa
+  mensagem_whatsapp_id?: string
+  lida: boolean
+  data_envio: string
+  usuario?: { nome: string; avatar_url?: string }
+}
+
+// ============================================================
+// CRM - Campanhas CRM
+// ============================================================
+export type TipoCampanhaCRM =
+  | 'marketing'
+  | 'reativacao'
+  | 'promocional'
+  | 'informativa'
+  | 'aniversario'
+  | 'retorno'
+
+export type StatusCampanhaCRM =
+  | 'rascunho'
+  | 'agendada'
+  | 'enviando'
+  | 'concluida'
+  | 'cancelada'
+  | 'pausada'
+
+export interface CampanhaCRM {
+  id: string
+  clinica_id: string
+  nome: string
+  descricao?: string
+  tipo: TipoCampanhaCRM
+  canal: CanalComunicacao
+  mensagem_template: string
+  filtro_tags?: string[]
+  filtro_status?: StatusPaciente[]
+  filtro_dias_sem_consulta?: number
+  filtro_tipo_procedimento?: string
+  filtro_cidade?: string
+  filtro_sexo?: SexoPaciente
+  filtro_idade_min?: number
+  filtro_idade_max?: number
+  agendada_para?: string
+  status: StatusCampanhaCRM
+  total_destinatarios: number
+  total_enviadas: number
+  total_entregues: number
+  total_lidas: number
+  total_respostas: number
+  criado_por?: string
+  criado_em: string
+  atualizado_em: string
+}
+
+export interface EnvioCampanhaCRM {
+  id: string
+  campanha_id: string
+  paciente_id: string
+  status: 'pendente' | 'enviada' | 'entregue' | 'lida' | 'respondida' | 'falhou'
+  data_envio?: string
+  data_leitura?: string
+  erro?: string
+  criado_em: string
+  paciente?: Paciente
+}
+
+// ============================================================
+// CRM - Timeline do Paciente
+// ============================================================
+export type TipoEventoTimeline =
+  | 'consulta_realizada'
+  | 'consulta_agendada'
+  | 'consulta_cancelada'
+  | 'pagamento'
+  | 'mensagem_enviada'
+  | 'mensagem_recebida'
+  | 'interacao'
+  | 'anotacao'
+  | 'oportunidade'
+  | 'tag_adicionada'
+  | 'cadastro'
+
+export interface EventoTimeline {
+  id: string
+  tipo: TipoEventoTimeline
+  titulo: string
+  descricao?: string
+  data: string
+  icone?: string
+  cor?: string
+  dados?: Record<string, unknown>
+}
+
+// ============================================================
+// CRM - Perfil Completo do Paciente
+// ============================================================
+export interface PerfilCompletoPaciente {
+  paciente: Paciente
+  pontuacao?: PontuacaoPaciente
+  etapa_funil?: EtapaFunilPaciente
+  tags: TagCRM[]
+  timeline: EventoTimeline[]
+  oportunidades: OportunidadePaciente[]
+  ultima_consulta?: Consulta
+  proxima_consulta?: Consulta
+  medico_responsavel?: Medico
+  total_consultas: number
+  valor_total_gasto: number
+  interacoes_recentes: InteracaoPaciente[]
+}
+
+// ============================================================
+// CRM - Métricas do Dashboard
+// ============================================================
+export interface MetricasCRM {
+  total_pacientes_ativos: number
+  pacientes_inativos_90dias: number
+  pacientes_inativos_180dias: number
+  oportunidades_abertas: number
+  oportunidades_alta_prioridade: number
+  conversas_ativas: number
+  mensagens_nao_lidas: number
+  campanhas_ativas: number
+  taxa_retorno: number
+}
+
+// ============================================================
+// CRM - Radar de Oportunidades (view do banco)
+// ============================================================
+export interface RadarOportunidade {
+  paciente_id: string
+  clinica_id: string
+  paciente_nome: string
+  telefone?: string
+  telefone_whatsapp?: string
+  ultimo_procedimento?: string
+  data_ultimo_procedimento?: string
+  dias_desde_ultimo: number
+  tipo_oportunidade: TipoOportunidade
+  prioridade: PrioridadeOportunidade
+}

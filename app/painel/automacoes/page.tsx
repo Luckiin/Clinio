@@ -124,17 +124,17 @@ export default function PaginaAutomacoes() {
   const totalInativas = automacoes.length - totalAtivas
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900/50">
       {/* Header da página */}
-      <div className="bg-white border-b border-gray-200 px-6 py-5">
+      <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-5">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Zap className="w-6 h-6 text-blue-600" />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 flex items-center gap-2">
+                <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 Automações
               </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
                 Motor de automações baseado em eventos — configure disparos automáticos para pacientes e consultas
               </p>
             </div>
@@ -149,31 +149,31 @@ export default function PaginaAutomacoes() {
 
           {/* Cards de estatísticas */}
           <div className="grid grid-cols-3 gap-4 mt-5">
-            <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Zap className="w-5 h-5 text-blue-600" />
+            <div className="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-4 flex items-center gap-3">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/60 rounded-lg">
+                <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{automacoes.length}</p>
-                <p className="text-xs text-gray-500">Total de automações</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{automacoes.length}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">Total de automações</p>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
+            <div className="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-4 flex items-center gap-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900/60 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{totalAtivas}</p>
-                <p className="text-xs text-gray-500">Ativas</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{totalAtivas}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">Ativas</p>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
+            <div className="bg-gray-50 dark:bg-slate-900/50 rounded-xl p-4 flex items-center gap-3">
               <div className="p-2 bg-gray-200 rounded-lg">
-                <Clock className="w-5 h-5 text-gray-500" />
+                <Clock className="w-5 h-5 text-gray-500 dark:text-slate-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{totalInativas}</p>
-                <p className="text-xs text-gray-500">Inativas</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{totalInativas}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">Inativas</p>
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function PaginaAutomacoes() {
               value={busca}
               onChange={e => setBusca(e.target.value)}
               placeholder="Buscar automações..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800"
             />
           </div>
 
@@ -202,7 +202,7 @@ export default function PaginaAutomacoes() {
             <select
               value={filtroEvento}
               onChange={e => setFiltroEvento(e.target.value as EventoAutomacao | 'todos')}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {FILTROS_EVENTO.map(f => (
                 <option key={f.value} value={f.value}>{f.label}</option>
@@ -211,7 +211,7 @@ export default function PaginaAutomacoes() {
           </div>
 
           {/* Filtro status */}
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden bg-white">
+          <div className="flex rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-800">
             {(['todos', 'ativo', 'inativo'] as const).map(f => (
               <button
                 key={f}
@@ -219,7 +219,7 @@ export default function PaginaAutomacoes() {
                 className={`px-3 py-2 text-sm capitalize transition-colors ${
                   filtroAtivo === f
                     ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:bg-slate-900/50'
                 }`}
               >
                 {f === 'todos' ? 'Todos' : f === 'ativo' ? 'Ativas' : 'Inativas'}
@@ -230,7 +230,7 @@ export default function PaginaAutomacoes() {
 
         {/* Estado de erro */}
         {erro && (
-          <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-red-700 text-sm">
+          <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-4 text-red-700 dark:text-red-400 text-sm">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {erro}
           </div>
@@ -240,12 +240,12 @@ export default function PaginaAutomacoes() {
         {carregando && (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 animate-pulse">
+              <div key={i} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-800 p-4 animate-pulse">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg" />
+                  <div className="w-10 h-10 bg-gray-100 dark:bg-slate-800 rounded-lg" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-100 rounded w-1/3" />
-                    <div className="h-3 bg-gray-100 rounded w-1/2" />
+                    <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded w-1/3" />
+                    <div className="h-3 bg-gray-100 dark:bg-slate-800 rounded w-1/2" />
                   </div>
                 </div>
               </div>
@@ -259,7 +259,7 @@ export default function PaginaAutomacoes() {
             {automacoesVisiveis.length === 0 ? (
               <div className="text-center py-16">
                 <Zap className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                <h3 className="text-gray-500 font-medium">
+                <h3 className="text-gray-500 dark:text-slate-400 font-medium">
                   {busca || filtroEvento !== 'todos' || filtroAtivo !== 'todos'
                     ? 'Nenhuma automação encontrada com esses filtros'
                     : 'Nenhuma automação criada ainda'}
@@ -292,7 +292,7 @@ export default function PaginaAutomacoes() {
 
                     {/* Confirmação de exclusão */}
                     {confirmandoExclusao === automacao.id && (
-                      <div className="mt-1 flex items-center gap-2 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+                      <div className="mt-1 flex items-center gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/40 rounded-lg px-3 py-2">
                         <AlertCircle className="w-4 h-4" />
                         Clique novamente em excluir para confirmar a exclusão permanente
                       </div>
@@ -300,8 +300,8 @@ export default function PaginaAutomacoes() {
 
                     {/* Histórico expandido */}
                     {automacaoHistorico === automacao.id && (
-                      <div className="mt-1 bg-white border border-gray-100 rounded-xl p-4">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                      <div className="mt-1 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 rounded-xl p-4">
+                        <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                           <TrendingUp className="w-4 h-4" />
                           Histórico de execuções
                         </h4>
@@ -313,7 +313,7 @@ export default function PaginaAutomacoes() {
                       onClick={() => setAutomacaoHistorico(
                         automacaoHistorico === automacao.id ? null : automacao.id
                       )}
-                      className="text-xs text-gray-400 hover:text-blue-600 hover:underline mt-1 ml-2"
+                      className="text-xs text-gray-400 hover:text-blue-600 dark:text-blue-400 hover:underline mt-1 ml-2"
                     >
                       {automacaoHistorico === automacao.id ? 'Ocultar histórico' : 'Ver histórico'}
                     </button>

@@ -303,26 +303,26 @@ export default function PaginaAgenda() {
     <div className="flex flex-col h-[calc(100vh-48px)]">
 
       {/* ── Toolbar ── */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-wrap flex-shrink-0">
+      <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 py-3 flex items-center gap-3 flex-wrap flex-shrink-0">
         <div className="flex items-center gap-1">
-          <button onClick={() => navegar('anterior')} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors" aria-label="Anterior">
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <button onClick={() => navegar('anterior')} className="p-1.5 rounded-md hover:bg-gray-100 dark:bg-slate-800 transition-colors" aria-label="Anterior">
+            <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-slate-400" />
           </button>
-          <button onClick={irParaHoje} className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+          <button onClick={irParaHoje} className="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 rounded-md transition-colors">
             Hoje
           </button>
-          <button onClick={() => navegar('proximo')} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors" aria-label="Próximo">
-            <ChevronRight className="w-5 h-5 text-gray-600" />
+          <button onClick={() => navegar('proximo')} className="p-1.5 rounded-md hover:bg-gray-100 dark:bg-slate-800 transition-colors" aria-label="Próximo">
+            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-slate-400" />
           </button>
         </div>
 
-        <h2 className="text-base font-semibold text-gray-900 capitalize flex-1">{tituloNav}</h2>
+        <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100 capitalize flex-1">{tituloNav}</h2>
 
         {medicos.length > 0 && (
           <select
             value={medicoFiltro}
             onChange={e => setMedicoFiltro(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos os médicos</option>
             {medicos.map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
@@ -330,28 +330,28 @@ export default function PaginaAgenda() {
         )}
 
         {taxaOcupacao !== null && (
-          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${taxaOcupacao >= 80 ? 'bg-red-100 text-red-700' : taxaOcupacao >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
+          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${taxaOcupacao >= 80 ? 'bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-400' : taxaOcupacao >= 60 ? 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400' : 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400'}`}>
             {taxaOcupacao}% ocupado
           </span>
         )}
 
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden bg-white">
+        <div className="flex rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-800">
           {(['mes', 'semana', 'dia'] as const).map(v => (
             <button
               key={v}
               onClick={() => setVisao(v)}
-              className={`px-3 py-1.5 text-sm flex items-center gap-1 transition-colors border-r last:border-r-0 border-gray-200 ${visao === v ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`px-3 py-1.5 text-sm flex items-center gap-1 transition-colors border-r last:border-r-0 border-gray-200 dark:border-slate-700 ${visao === v ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:bg-slate-900/50'}`}
             >
               {v === 'mes' ? <><LayoutGrid className="w-3.5 h-3.5" /> Mês</> : v === 'semana' ? <><List className="w-3.5 h-3.5" /> Semana</> : <><Clock className="w-3.5 h-3.5" /> Dia</>}
             </button>
           ))}
         </div>
 
-        <button onClick={buscarConsultas} disabled={carregando} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors disabled:opacity-50" title="Atualizar">
-          <RefreshCw className={`w-4 h-4 text-gray-500 ${carregando ? 'animate-spin' : ''}`} />
+        <button onClick={buscarConsultas} disabled={carregando} className="p-1.5 rounded-md hover:bg-gray-100 dark:bg-slate-800 transition-colors disabled:opacity-50" title="Atualizar">
+          <RefreshCw className={`w-4 h-4 text-gray-500 dark:text-slate-400 ${carregando ? 'animate-spin' : ''}`} />
         </button>
 
-        <button onClick={() => setModalEsperaAberto(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-700 text-sm hover:bg-amber-100 transition-colors">
+        <button onClick={() => setModalEsperaAberto(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-sm hover:bg-amber-100 dark:bg-amber-900/60 transition-colors">
           <Clock className="w-4 h-4" /> Espera
         </button>
 
@@ -407,18 +407,18 @@ export default function PaginaAgenda() {
         {/* Painel lateral — só na visão dia */}
         {visao === 'dia' && (
           <div className="w-68 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-600" />
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 {consultasDoDia.length === 0 ? 'Sem consultas' : `${consultasDoDia.length} consulta${consultasDoDia.length !== 1 ? 's' : ''}`}
               </h3>
               <div className="space-y-1.5">
                 {consultasDoDia.map(c => {
                   const hora = new Date(c.data_hora_inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
                   return (
-                    <button key={c.id} onClick={() => abrirDetalhes(c)} className="w-full text-left text-xs flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <button key={c.id} onClick={() => abrirDetalhes(c)} className="w-full text-left text-xs flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 dark:bg-slate-900/50 transition-colors">
                       <span className="text-gray-400 w-10 flex-shrink-0">{hora}</span>
-                      <span className="text-gray-700 truncate">{c.paciente?.nome ?? '—'}</span>
+                      <span className="text-gray-700 dark:text-slate-300 truncate">{c.paciente?.nome ?? '—'}</span>
                     </button>
                   )
                 })}

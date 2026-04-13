@@ -19,7 +19,8 @@ import {
   Bell,
   ChevronLeft,
   Moon,
-  Sun
+  Sun,
+  Heart
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
@@ -37,6 +38,7 @@ const itensNavegacao: ItemNavegacao[] = [
   { rotulo: 'Painel',         href: '/painel',             icone: LayoutDashboard },
   { rotulo: 'Agenda',         href: '/painel/agenda',      icone: Calendar },
   { rotulo: 'Pacientes',      href: '/painel/pacientes',   icone: Users },
+  { rotulo: 'CRM',            href: '/painel/crm',         icone: Heart },
   { rotulo: 'Financeiro',     href: '/painel/financeiro',  icone: DollarSign },
   { rotulo: 'Automações',     href: '/painel/automacoes',  icone: Bell },
   { rotulo: 'Campanhas',      href: '/painel/campanhas',   icone: Megaphone },
@@ -77,14 +79,14 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
       `}
     >
       {/* Cabeçalho da barra lateral */}
-      <div className="flex items-center justify-between px-6 py-6 border-b border-slate-100">
+      <div className="flex items-center justify-between px-6 py-6 border-b border-slate-100 dark:border-slate-800">
         {!recolhida && (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primaria-500 to-primaria-600 flex items-center justify-center shadow-soft">
               <Stethoscope className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-800 tracking-tight">Clinio</h1>
+              <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200 tracking-tight">Clinio</h1>
               {nomeClinica && (
                 <p className="text-[11px] text-slate-400 truncate max-w-[140px] uppercase tracking-wider font-medium">{nomeClinica}</p>
               )}
@@ -95,7 +97,7 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
           {montado && (
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:bg-slate-800 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
               aria-label="Alternar tema"
             >
               {theme === 'dark' ? (
@@ -107,7 +109,7 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
           )}
           <button
           onClick={() => setRecolhida(!recolhida)}
-          className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors ml-auto"
+          className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:bg-slate-800 hover:text-slate-700 dark:text-slate-300 transition-colors ml-auto"
           aria-label={recolhida ? 'Expandir menu' : 'Recolher menu'}
         >
           <ChevronLeft
@@ -154,8 +156,8 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
         <Link
           href="/notificacoes"
           className={`
-            flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-slate-500
-            hover:bg-white hover:text-slate-800 hover:shadow-sm border border-transparent hover:border-slate-200 transition-all mb-2 group
+            flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400
+            hover:bg-white dark:bg-slate-800 hover:text-slate-800 dark:text-slate-200 hover:shadow-sm border border-transparent hover:border-slate-200 dark:border-slate-700 transition-all mb-2 group
             ${recolhida ? 'justify-center mx-1' : ''}
           `}
           title={recolhida ? 'Notificações' : undefined}
@@ -166,13 +168,13 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
 
         {/* Usuário e sair */}
         {!recolhida && nomeUsuario && (
-          <div className="px-3 py-2.5 mb-2 bg-white rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs">
+          <div className="px-3 py-2.5 mb-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-xs">
               {nomeUsuario.charAt(0).toUpperCase()}
             </div>
             <div className="overflow-hidden">
               <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Logado como</p>
-              <p className="text-sm text-slate-700 font-bold truncate">{nomeUsuario}</p>
+              <p className="text-sm text-slate-700 dark:text-slate-300 font-bold truncate">{nomeUsuario}</p>
               {perfil && (
                 <span className="text-[10px] text-primaria-600 font-semibold uppercase">{perfil}</span>
               )}
@@ -184,7 +186,7 @@ export function BarraLateral({ nomeClinica, nomeUsuario, perfil }: PropsBarraLat
           onClick={sair}
           className={`
             w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl group
-            text-slate-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-transparent transition-all
+            text-slate-500 dark:text-slate-400 hover:bg-red-50 dark:bg-red-900/40 hover:text-red-600 dark:text-red-400 hover:border-red-100 border border-transparent transition-all
             ${recolhida ? 'justify-center mx-1' : ''}
           `}
           title={recolhida ? 'Sair' : undefined}

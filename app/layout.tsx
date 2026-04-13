@@ -26,7 +26,7 @@ export default function LayoutRaiz({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased bg-gray-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300`}>
+      <body className={`${inter.className} antialiased bg-gray-50 dark:bg-slate-900/50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300`}>
         <ProvedorTema attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ProvedorTema>

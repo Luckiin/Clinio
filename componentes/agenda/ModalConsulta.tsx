@@ -177,36 +177,36 @@ export function ModalConsulta({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[92vh] flex flex-col animar-fade-in">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-xl max-h-[92vh] flex flex-col animar-fade-in">
 
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
             {modo === 'detalhes' && consulta && (
               <div className="flex gap-1">
                 <button
                   onClick={() => setModo('prontuario')}
-                  className="text-xs text-blue-600 hover:text-blue-800 px-2 py-1 rounded border border-blue-200 hover:bg-blue-50"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-300 px-2 py-1 rounded border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:bg-blue-900/40"
                 >
                   Prontuário
                 </button>
                 <button
                   onClick={() => setModo('reagendar')}
-                  className="text-xs text-gray-600 hover:text-gray-800 px-2 py-1 rounded border border-gray-200 hover:bg-gray-50"
+                  className="text-xs text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:text-slate-200 px-2 py-1 rounded border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:bg-slate-900/50"
                 >
                   Reagendar
                 </button>
               </div>
             )}
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
               {modo === 'nova'      && 'Nova Consulta'}
               {modo === 'detalhes'  && 'Detalhes da Consulta'}
               {modo === 'reagendar' && 'Reagendar Consulta'}
               {modo === 'prontuario'&& 'Prontuário'}
             </h2>
           </div>
-          <button onClick={aoFechar} className="p-1.5 rounded-lg hover:bg-gray-100">
-            <X className="w-5 h-5 text-gray-500" />
+          <button onClick={aoFechar} className="p-1.5 rounded-lg hover:bg-gray-100 dark:bg-slate-800">
+            <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
           </button>
         </div>
 
@@ -359,10 +359,10 @@ export function ModalConsulta({
           {modo === 'detalhes' && consulta && (
             <div className="space-y-5">
               {/* Cabeçalho da consulta */}
-              <div className="flex items-start justify-between p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-start justify-between p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl">
                 <div>
-                  <p className="text-xl font-bold text-gray-900">{consulta.paciente?.nome}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">{consulta.paciente?.telefone}</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-slate-100">{consulta.paciente?.nome}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{consulta.paciente?.telefone}</p>
                 </div>
                 <StatusBadge status={consulta.status} />
               </div>
@@ -396,15 +396,15 @@ export function ModalConsulta({
               </div>
 
               {consulta.observacoes && (
-                <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                  <p className="text-xs font-semibold text-amber-800 mb-1">Observações</p>
-                  <p className="text-sm text-amber-700">{consulta.observacoes}</p>
+                <div className="p-3 bg-amber-50 dark:bg-amber-900/40 border border-amber-100 rounded-lg">
+                  <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">Observações</p>
+                  <p className="text-sm text-amber-700 dark:text-amber-400">{consulta.observacoes}</p>
                 </div>
               )}
 
               {/* Ações por status */}
               {consulta.status === 'agendado' && (
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 dark:border-slate-800">
                   <BotaoAcao
                     variante="sucesso"
                     larguraTotal
@@ -430,8 +430,8 @@ export function ModalConsulta({
               )}
 
               {consulta.status === 'confirmado' && (
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-xs font-semibold text-gray-500 mb-2">Registro de Presença</p>
+                <div className="pt-2 border-t border-gray-100 dark:border-slate-800">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">Registro de Presença</p>
                   <div className="grid grid-cols-2 gap-3">
                     <BotaoAcao
                       variante="sucesso"
@@ -460,9 +460,9 @@ export function ModalConsulta({
           {/* ── MODO REAGENDAR ─────────────────────────────── */}
           {modo === 'reagendar' && consulta && (
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                <p className="text-sm text-blue-800 font-medium">{consulta.paciente?.nome}</p>
-                <p className="text-xs text-blue-600 mt-0.5">
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/40 rounded-xl border border-blue-100">
+                <p className="text-sm text-blue-800 dark:text-blue-300 font-medium">{consulta.paciente?.nome}</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
                   Atual: {formatarDataHora(consulta.data_hora_inicio)}
                 </p>
               </div>
@@ -490,8 +490,8 @@ export function ModalConsulta({
           {/* ── MODO PRONTUÁRIO ────────────────────────────── */}
           {modo === 'prontuario' && consulta && (
             <div className="space-y-4">
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm font-semibold text-gray-700">{consulta.paciente?.nome}</p>
+              <div className="p-3 bg-gray-50 dark:bg-slate-900/50 rounded-lg">
+                <p className="text-sm font-semibold text-gray-700 dark:text-slate-300">{consulta.paciente?.nome}</p>
                 <p className="text-xs text-gray-400">{formatarDataHora(consulta.data_hora_inicio)}</p>
               </div>
               <div>
@@ -529,9 +529,9 @@ export function ModalConsulta({
         </div>
 
         {/* Rodapé com botões */}
-        <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100">
+        <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100 dark:border-slate-800">
           {erroSalvar && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">
               {erroSalvar}
             </p>
           )}
@@ -580,13 +580,13 @@ export function ModalConsulta({
 
 function StatusBadge({ status }: { status: StatusConsulta }) {
   const mapa: Record<StatusConsulta, { texto: string; classe: string }> = {
-    agendado:       { texto: 'Agendado',        classe: 'bg-blue-100 text-blue-700' },
-    confirmado:     { texto: 'Confirmado',       classe: 'bg-green-100 text-green-700' },
-    em_atendimento: { texto: 'Em Atendimento',   classe: 'bg-yellow-100 text-yellow-700' },
-    concluido:      { texto: 'Concluído',        classe: 'bg-gray-100 text-gray-600' },
-    cancelado:      { texto: 'Cancelado',        classe: 'bg-red-100 text-red-700' },
-    faltou:         { texto: 'Não Compareceu',   classe: 'bg-orange-100 text-orange-700' },
-    remarcado:      { texto: 'Remarcado',        classe: 'bg-purple-100 text-purple-700' },
+    agendado:       { texto: 'Agendado',        classe: 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400' },
+    confirmado:     { texto: 'Confirmado',       classe: 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400' },
+    em_atendimento: { texto: 'Em Atendimento',   classe: 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400' },
+    concluido:      { texto: 'Concluído',        classe: 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400' },
+    cancelado:      { texto: 'Cancelado',        classe: 'bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-400' },
+    faltou:         { texto: 'Não Compareceu',   classe: 'bg-orange-100 dark:bg-orange-900/60 text-orange-700 dark:text-orange-400' },
+    remarcado:      { texto: 'Remarcado',        classe: 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-400' },
   }
   const { texto, classe } = mapa[status] ?? mapa.agendado
   return <span className={`badge text-xs font-semibold px-3 py-1 rounded-full ${classe}`}>{texto}</span>
@@ -596,11 +596,11 @@ function InfoItem({
   icone, rotulo, children
 }: { icone: React.ReactNode; rotulo: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-lg">
+    <div className="flex items-start gap-2.5 p-3 bg-gray-50 dark:bg-slate-900/50 rounded-lg">
       <span className="text-gray-400 mt-0.5 flex-shrink-0">{icone}</span>
       <div>
         <p className="text-xs text-gray-400">{rotulo}</p>
-        <p className="text-sm font-semibold text-gray-800">{children}</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-slate-200">{children}</p>
       </div>
     </div>
   )

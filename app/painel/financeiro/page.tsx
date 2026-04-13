@@ -23,11 +23,11 @@ const rotulos_forma: Record<FormaPagamento, string> = {
 }
 
 const cores_status: Record<StatusCobranca, string> = {
-  pendente: 'bg-yellow-100 text-yellow-700',
-  pago: 'bg-green-100 text-green-700',
-  parcialmente_pago: 'bg-blue-100 text-blue-700',
-  cancelado: 'bg-gray-100 text-gray-600',
-  vencido: 'bg-red-100 text-red-700',
+  pendente: 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400',
+  pago: 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400',
+  parcialmente_pago: 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400',
+  cancelado: 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400',
+  vencido: 'bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-400',
 }
 
 const rotulos_status: Record<StatusCobranca, string> = {
@@ -169,8 +169,8 @@ export default function PaginaFinanceiro() {
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Financeiro</h1>
-          <p className="text-gray-500 text-sm">Controle de cobranças e pagamentos</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Financeiro</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm">Controle de cobranças e pagamentos</p>
         </div>
         <BotaoAcao variante="primario" icone={<Plus className="w-4 h-4" />} onClick={abrirNovaCobranca}>
           Nova Cobrança
@@ -184,37 +184,37 @@ export default function PaginaFinanceiro() {
             titulo="Receita do Mês"
             valor={formatarMoeda(resumo.receita_total || 0)}
             icone={<DollarSign className="w-6 h-6" />}
-            corIcone="text-green-600"
+            corIcone="text-green-600 dark:text-green-400"
           />
           <CartaoMetrica
             titulo="Ticket Médio"
             valor={formatarMoeda(resumo.ticket_medio || 0)}
             icone={<TrendingUp className="w-6 h-6" />}
-            corIcone="text-blue-600"
+            corIcone="text-blue-600 dark:text-blue-400"
           />
           <CartaoMetrica
             titulo="A Receber"
             valor={resumo.cobrancas_pendentes || 0}
             icone={<Clock className="w-6 h-6" />}
-            corIcone="text-amber-600"
+            corIcone="text-amber-600 dark:text-amber-400"
           />
           <CartaoMetrica
             titulo="Vencidas"
             valor={resumo.cobrancas_vencidas || 0}
             icone={<AlertCircle className="w-6 h-6" />}
-            corIcone="text-red-600"
+            corIcone="text-red-600 dark:text-red-400"
           />
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 dark:border-slate-700">
         <button
           onClick={() => setAbaAtiva('resumo')}
           className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
             abaDativa === 'resumo'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300'
           }`}
         >
           Resumo
@@ -223,8 +223,8 @@ export default function PaginaFinanceiro() {
           onClick={() => setAbaAtiva('cobrancas')}
           className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
             abaDativa === 'cobrancas'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300'
           }`}
         >
           Cobranças
@@ -248,16 +248,16 @@ export default function PaginaFinanceiro() {
                     return (
                       <div key={forma}>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-700">
+                          <span className="text-gray-700 dark:text-slate-300">
                             {rotulos_forma[forma as FormaPagamento] || forma}
                           </span>
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-gray-900 dark:text-slate-100">
                             {formatarMoeda(valor)} ({percentual.toFixed(1)}%)
                           </span>
                         </div>
-                        <div className="h-2 bg-gray-100 rounded-full">
+                        <div className="h-2 bg-gray-100 dark:bg-slate-800 rounded-full">
                           <div
-                            className="h-2 bg-blue-500 rounded-full transition-all"
+                            className="h-2 bg-blue-50 dark:bg-blue-900/400 rounded-full transition-all"
                             style={{ width: `${percentual}%` }}
                           />
                         </div>
@@ -283,16 +283,16 @@ export default function PaginaFinanceiro() {
                   return (
                     <div key={mes}>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-700">
+                        <span className="text-gray-700 dark:text-slate-300">
                           {nomeMeses[parseInt(mesNum) - 1]} {ano}
                         </span>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-gray-900 dark:text-slate-100">
                           {formatarMoeda(receita)}
                         </span>
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full">
+                      <div className="h-2 bg-gray-100 dark:bg-slate-800 rounded-full">
                         <div
-                          className="h-2 bg-green-500 rounded-full transition-all"
+                          className="h-2 bg-green-50 dark:bg-green-900/400 rounded-full transition-all"
                           style={{ width: `${percentual}%` }}
                         />
                       </div>
@@ -316,7 +316,7 @@ export default function PaginaFinanceiro() {
                 className={`text-sm px-3 py-1.5 rounded-lg border font-medium transition-colors ${
                   filtroStatus === s
                     ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:bg-slate-900/50'
                 }`}
               >
                 {s === '' ? 'Todas' : rotulos_status[s]}
@@ -325,7 +325,7 @@ export default function PaginaFinanceiro() {
           </div>
 
           {/* Tabela de cobranças */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
             <table className="tabela-padrao">
               <thead>
                 <tr>
@@ -364,7 +364,7 @@ export default function PaginaFinanceiro() {
                           {formatarMoeda(cobranca.valor_final)}
                         </span>
                         {cobranca.valor_desconto > 0 && (
-                          <p className="text-xs text-green-600">
+                          <p className="text-xs text-green-600 dark:text-green-400">
                             Desconto: {formatarMoeda(cobranca.valor_desconto)}
                           </p>
                         )}
@@ -381,7 +381,7 @@ export default function PaginaFinanceiro() {
                       </td>
                       <td>
                         {cobranca.status === 'pendente' && (
-                          <button onClick={() => abrirModalPagamento(cobranca)} className="text-blue-600 text-sm hover:text-blue-800 font-medium">
+                          <button onClick={() => abrirModalPagamento(cobranca)} className="text-blue-600 dark:text-blue-400 text-sm hover:text-blue-800 dark:text-blue-300 font-medium">
                             Registrar pagamento
                           </button>
                         )}
@@ -398,12 +398,12 @@ export default function PaginaFinanceiro() {
       {/* Modal Nova Cobrança */}
       {modalNovaCobranca && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-modal w-full max-w-md overflow-hidden animate-fade-in transition-all">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-lg font-bold text-slate-800">Nova Cobrança</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-modal w-full max-w-md overflow-hidden animate-fade-in transition-all">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Nova Cobrança</h2>
               <button
                 onClick={() => setModalNovaCobranca(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-400"
               >
                 ×
               </button>
@@ -466,7 +466,7 @@ export default function PaginaFinanceiro() {
                   className="campo-input"
                 />
               </div>
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <BotaoAcao variante="secundario" onClick={() => setModalNovaCobranca(false)} type="button">
                   Cancelar
                 </BotaoAcao>
@@ -482,12 +482,12 @@ export default function PaginaFinanceiro() {
       {/* Modal Registrar Pagamento */}
       {modalPagamento && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-modal w-full max-w-md overflow-hidden animate-fade-in transition-all">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-lg font-bold text-slate-800">Registrar Pagamento</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-modal w-full max-w-md overflow-hidden animate-fade-in transition-all">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Registrar Pagamento</h2>
               <button
                 onClick={() => setModalPagamento(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-400"
               >
                 ×
               </button>
@@ -540,7 +540,7 @@ export default function PaginaFinanceiro() {
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <BotaoAcao variante="secundario" onClick={() => setModalPagamento(null)} type="button">
                   Cancelar
                 </BotaoAcao>

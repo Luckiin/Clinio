@@ -67,10 +67,10 @@ export default async function PaginaDashboard() {
     <div className="space-y-6">
       {/* Cabeçalho */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
           Bom dia, {usuario.nome?.split(' ')[0]}! 👋
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 dark:text-slate-400 mt-1">
           {new Date().toLocaleDateString('pt-BR', {
             weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
           })}
@@ -79,16 +79,16 @@ export default async function PaginaDashboard() {
 
       {/* Alertas de alto risco */}
       {consultasAltoRisco.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <div className="bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
-            <h3 className="font-semibold text-amber-800">
+            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-semibold text-amber-800 dark:text-amber-300">
               {consultasAltoRisco.length} consulta(s) com alto risco de falta hoje
             </h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {consultasAltoRisco.map((c) => (
-              <span key={c.consulta_id} className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
+              <span key={c.consulta_id} className="text-sm bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 px-2 py-1 rounded-lg">
                 {c.hora} - {c.paciente_nome} ({c.probabilidade}% de risco)
               </span>
             ))}
@@ -104,14 +104,14 @@ export default async function PaginaDashboard() {
           titulo="Consultas Hoje"
           valor={metricasConsultasOntem.total}
           icone={<Calendar className="w-6 h-6" />}
-          corIcone="text-blue-600"
+          corIcone="text-blue-600 dark:text-blue-400"
         />
         <CartaoMetrica
           titulo="Pacientes Ativos"
           valor={estatisticasPacientes.total_ativos.toLocaleString('pt-BR')}
           descricaoVariacao="este mês"
           icone={<Users className="w-6 h-6" />}
-          corIcone="text-green-600"
+          corIcone="text-green-600 dark:text-green-400"
         />
         <CartaoMetrica
           titulo="Receita do Mês"
@@ -119,13 +119,13 @@ export default async function PaginaDashboard() {
           variacao={variacaoReceita}
           descricaoVariacao="vs. mês anterior"
           icone={<DollarSign className="w-6 h-6" />}
-          corIcone="text-emerald-600"
+          corIcone="text-emerald-600 dark:text-emerald-400"
         />
         <CartaoMetrica
           titulo="Taxa de Comparecimento"
           valor={`${metricasConsultasMes.taxa_comparecimento}%`}
           icone={<TrendingUp className="w-6 h-6" />}
-          corIcone="text-purple-600"
+          corIcone="text-purple-600 dark:text-purple-400"
         />
       </div>
 
@@ -135,7 +135,7 @@ export default async function PaginaDashboard() {
         <div className="lg:col-span-2 cartao">
           <div className="flex items-center justify-between mb-5">
             <h2 className="titulo-secao">Agenda de Hoje</h2>
-            <a href="/painel/agenda" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            <a href="/painel/agenda" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-300 font-medium">
               Ver agenda completa →
             </a>
           </div>
@@ -145,22 +145,22 @@ export default async function PaginaDashboard() {
               {consultasHoje.data.map((c: any) => (
                 <div
                   key={c.id}
-                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors border-l-4"
+                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:bg-slate-900/50 transition-colors border-l-4"
                   style={{ borderLeftColor: c.medico?.cor_agenda || '#3B82F6' }}
                 >
                   <div className="text-center min-w-[50px]">
-                    <p className="text-sm font-bold text-gray-700">{formatarHora(c.data_hora_inicio)}</p>
+                    <p className="text-sm font-bold text-gray-700 dark:text-slate-300">{formatarHora(c.data_hora_inicio)}</p>
                     <p className="text-xs text-gray-400">{formatarHora(c.data_hora_fim)}</p>
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800">{(c.paciente as any)?.nome}</p>
-                    <p className="text-xs text-gray-500">{(c.medico as any)?.nome}</p>
+                    <p className="font-medium text-gray-800 dark:text-slate-200">{(c.paciente as any)?.nome}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400">{(c.medico as any)?.nome}</p>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full font-medium
-                    ${c.status === 'confirmado' ? 'bg-green-100 text-green-700' :
-                      c.status === 'em_atendimento' ? 'bg-yellow-100 text-yellow-700' :
-                      c.status === 'concluido' ? 'bg-gray-100 text-gray-600' :
-                      'bg-blue-100 text-blue-700'}`}
+                    ${c.status === 'confirmado' ? 'bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-400' :
+                      c.status === 'em_atendimento' ? 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400' :
+                      c.status === 'concluido' ? 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400' :
+                      'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400'}`}
                   >
                     {c.status === 'agendado' ? 'Agendado' :
                      c.status === 'confirmado' ? 'Confirmado' :
@@ -173,7 +173,7 @@ export default async function PaginaDashboard() {
           ) : (
             <div className="text-center py-12">
               <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">Nenhuma consulta agendada para hoje</p>
+              <p className="text-gray-500 dark:text-slate-400">Nenhuma consulta agendada para hoje</p>
             </div>
           )}
         </div>
@@ -185,20 +185,20 @@ export default async function PaginaDashboard() {
             <h2 className="titulo-secao mb-4">Financeiro do Mês</h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Receita</span>
-                <span className="font-semibold text-green-600">
+                <span className="text-sm text-gray-600 dark:text-slate-400">Receita</span>
+                <span className="font-semibold text-green-600 dark:text-green-400">
                   {formatarMoeda(resumoFinanceiro.receita_total)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">A receber</span>
-                <span className="font-semibold text-amber-600">
+                <span className="text-sm text-gray-600 dark:text-slate-400">A receber</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">
                   {resumoFinanceiro.cobrancas_pendentes} cobranças
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Ticket médio</span>
-                <span className="font-semibold text-gray-800">
+                <span className="text-sm text-gray-600 dark:text-slate-400">Ticket médio</span>
+                <span className="font-semibold text-gray-800 dark:text-slate-200">
                   {formatarMoeda(resumoFinanceiro.ticket_medio)}
                 </span>
               </div>
@@ -210,26 +210,26 @@ export default async function PaginaDashboard() {
             <h2 className="titulo-secao mb-4">Pacientes</h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Novos este mês</span>
-                <span className="font-semibold text-blue-600">
+                <span className="text-sm text-gray-600 dark:text-slate-400">Novos este mês</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
                   {estatisticasPacientes.novos_mes}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Sem consulta há 90 dias</span>
-                <span className="font-semibold text-orange-600">
+                <span className="text-sm text-gray-600 dark:text-slate-400">Sem consulta há 90 dias</span>
+                <span className="font-semibold text-orange-600 dark:text-orange-400">
                   {estatisticasPacientes.sem_consulta_90_dias}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Inativos</span>
-                <span className="font-semibold text-red-600">
+                <span className="text-sm text-gray-600 dark:text-slate-400">Inativos</span>
+                <span className="font-semibold text-red-600 dark:text-red-400">
                   {estatisticasPacientes.inativos}
                 </span>
               </div>
               <a
                 href="/painel/pacientes?filtro=reativacao"
-                className="block text-center text-sm text-blue-600 hover:text-blue-800 font-medium mt-2"
+                className="block text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-300 font-medium mt-2"
               >
                 Reativar pacientes →
               </a>
