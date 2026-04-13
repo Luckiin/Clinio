@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 // ============================================================
 // CLINIO - Alerte de Risco de Falta
 // Exibe pacientes com alta probabilidade de não comparecer
@@ -49,7 +49,7 @@ export function AlerteRiscoFalta({
     setProcessando((p) => ({ ...p, [consultaId]: 'confirmando' }))
     try {
       await aoConfirmarPresenca?.(consultaId)
-      setDescartados((d) => new Set([...d, consultaId]))
+      setDescartados((d) => new Set([...Array.from(d), consultaId]))
     } finally {
       setProcessando((p) => ({ ...p, [consultaId]: null }))
     }
@@ -177,7 +177,7 @@ export function AlerteRiscoFalta({
                     )}
 
                     <button
-                      onClick={() => setDescartados((d) => new Set([...d, consulta.consulta_id]))}
+                      onClick={() => setDescartados((d) => new Set([...Array.from(d), consulta.consulta_id]))}
                       title="Dispensar alerta"
                       className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-lg transition-colors"
                     >
