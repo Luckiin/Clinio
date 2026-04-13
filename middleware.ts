@@ -19,17 +19,17 @@ export async function middleware(requisicao: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(nome) {
+        get(nome: string) {
           return requisicao.cookies.get(nome)?.value
         },
-        set(nome, valor, opcoes) {
+        set(nome: string, valor: string, opcoes: Record<string, any>) {
           requisicao.cookies.set({ name: nome, value: valor, ...opcoes })
           resposta = NextResponse.next({
             request: { headers: requisicao.headers },
           })
           resposta.cookies.set({ name: nome, value: valor, ...opcoes })
         },
-        remove(nome, opcoes) {
+        remove(nome: string, opcoes: Record<string, any>) {
           requisicao.cookies.set({ name: nome, value: '', ...opcoes })
           resposta = NextResponse.next({
             request: { headers: requisicao.headers },
