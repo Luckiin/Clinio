@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // CLINIO - Serviço de Previsão de Faltas (IA)
 // Algoritmo para prever probabilidade de falta em consultas
 // ============================================================
@@ -234,14 +234,11 @@ export async function buscarConsultasAltoRisco(
     const taxaFaltaHistorica = totalConsultas ? (totalFaltas || 0) / totalConsultas : 0
 
     const probabilidade = calcularProbabilidadeFalta({
-      taxaFaltaHistorica,
-      diaSemana,
-      hora,
+      historico_faltas: totalFaltas || 0,
+      dias_ate_consulta: 0, // Fallback para consultas do dia
+      dia_semana: diaSemana,
+      horario: `${String(dataHora.getHours()).padStart(2, '0')}:${String(dataHora.getMinutes()).padStart(2, '0')}`,
       confirmado: c.status === 'confirmado',
-      horasAteConsulta: Math.max(
-        0,
-        (dataHora.getTime() - Date.now()) / 3600000
-      ),
     })
 
     const probPct = Math.round(probabilidade * 100)

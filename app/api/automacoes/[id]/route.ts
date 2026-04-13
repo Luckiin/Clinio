@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { criarClienteServidor } from '@/lib/supabase-servidor'
 
 // PATCH /api/automacoes/[id] — atualiza automação (toggle ativo, editar config)
@@ -22,11 +22,13 @@ export async function PATCH(
     const corpo = await req.json()
 
     // Só permite atualizar campos seguros
-    const camposPermitidos = ['nome', 'descricao', 'evento', 'condicoes', 'acoes', 'delay_horas', 'ativo']
+    const camposPermitidos = ['nome', 'descricao', 'evento_gatilho', 'condicoes', 'acoes', 'delay_horas', 'ativo']
     const atualizacao: Record<string, unknown> = {}
     for (const campo of camposPermitidos) {
       if (campo in corpo) atualizacao[campo] = corpo[campo]
     }
+    // Mapeamento de 'evento' para 'evento_gatilho' vindo do corpo (UI usa 'evento')
+    if ('evento' in corpo) atualizacao.evento_gatilho = corpo.evento
 
     if (Object.keys(atualizacao).length === 0) {
       return NextResponse.json({ erro: 'Nenhum campo válido para atualizar' }, { status: 400 })

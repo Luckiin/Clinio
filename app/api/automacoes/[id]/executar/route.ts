@@ -36,7 +36,7 @@ export async function POST(
     const { paciente_id, consulta_id } = corpo
 
     // Dispara o evento da automação com contexto manual
-    await dispararEvento(automacao.evento, {
+    await dispararEvento(automacao.evento_gatilho, {
       clinica_id: membro.clinica_id,
       paciente_id,
       consulta_id,

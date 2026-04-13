@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // CLINIO - Motor de Automações Baseado em Eventos
 // Eventos → Condições → Ações
 //
@@ -12,21 +12,14 @@
 
 import { criarClienteServidor } from '@/lib/supabase-servidor'
 import { processarTemplateMensagem } from '@/lib/formatadores'
+import type { 
+  Automacao, 
+  EventoAutomacao, 
+  AcaoAutomacao, 
+  TipoAcaoAutomacao 
+} from '@/tipos'
 
-// ─── Tipos ────────────────────────────────────────────────────
-
-export type EventoAutomacao =
-  | 'consulta_criada'
-  | 'consulta_amanha'
-  | 'consulta_hoje'
-  | 'consulta_cancelada'
-  | 'aniversario_paciente'
-  | 'paciente_inativo'
-
-export type AcaoAutomacao =
-  | 'enviar_mensagem'
-  | 'criar_tarefa'
-  | 'disparar_campanha'
+// ─── Tipos Internos para o Motor ───────────────────────────────
 
 export interface ContextoEvento {
   clinica_id: string
@@ -40,14 +33,14 @@ export interface ResultadoExecucao {
   automacao_id: string
   automacao_nome: string
   sucesso: boolean
-  acao: AcaoAutomacao
+  acao_tipo: TipoAcaoAutomacao
   mensagem?: string
   erro?: string
 }
 
 // ─── Dispatcher principal ─────────────────────────────────────
 // Chamado quando um evento ocorre. Busca automações ativas
-// para o evento e executa cada ação configurada.
+// para o evento e executa cada ação configurada no array 'acoes'.
 export async function dispararEvento(
   evento: EventoAutomacao,
   contexto: ContextoEvento
@@ -66,30 +59,32 @@ export async function dispararEvento(
 
   const resultados: ResultadoExecucao[] = []
 
-  for (const automacao of automacoes) {
+  for (const automacao of (automacoes as Automacao[])) {
     // Verificar condições (se houver)
     const condicoesOk = await verificarCondicoes(automacao.condicoes, contexto)
     if (!condicoesOk) continue
 
     // Verificar delay configurado (ex: enviar 24h antes)
-    if (automacao.delay_horas) {
+    if (automacao.delay_horas && automacao.delay_horas > 0) {
       await agendarExecucaoComDelay(automacao, contexto)
       resultados.push({
         automacao_id: automacao.id,
         automacao_nome: automacao.nome,
         sucesso: true,
-        acao: automacao.acao,
+        acao_tipo: 'enviar_mensagem', // representativo para o delay
         mensagem: `Agendada para execução em ${automacao.delay_horas}h`,
       })
       continue
     }
 
-    // Executar imediatamente
-    const resultado = await executarAcao(automacao, contexto)
-    resultados.push(resultado)
+    // Executar cada ação configurada na automação
+    for (const acao of automacao.acoes) {
+      const resultado = await executarAcao(automacao, acao, contexto)
+      resultados.push(resultado)
 
-    // Registrar execução no histórico
-    await registrarExecucao(automacao.id, contexto, resultado)
+      // Registrar execução no histórico para cada ação
+      await registrarExecucao(automacao.id, contexto, resultado)
+    }
   }
 
   return resultados
@@ -97,7 +92,7 @@ export async function dispararEvento(
 
 // ─── Verificar condições da automação ────────────────────────
 async function verificarCondicoes(
-  condicoes: Record<string, any> | null,
+  condicoes: any | null,
   contexto: ContextoEvento
 ): Promise<boolean> {
   if (!condicoes || Object.keys(condicoes).length === 0) return true
@@ -115,7 +110,7 @@ async function verificarCondicoes(
     if ((count || 0) > 0) return false
   }
 
-  // Condição: status da consulta
+  // Condição: status da consulta (ex: só se estiver 'agendado')
   if (condicoes.status_consulta && contexto.consulta_id) {
     const { data: c } = await supabase
       .from('consultas')
@@ -135,33 +130,35 @@ async function verificarCondicoes(
       .not('status', 'in', '("cancelado","faltou")')
       .order('data_hora_inicio', { ascending: false })
       .limit(1)
-      .single()
-    if (!ultima || ultima.data_hora_inicio > limite) return false
+      .maybeSingle()
+    
+    if (ultima && (ultima as any).data_hora_inicio > limite) return false
   }
 
   return true
 }
 
-// ─── Executar ação ────────────────────────────────────────────
+// ─── Executar ação individual ──────────────────────────────────
 async function executarAcao(
-  automacao: any,
+  automacao: Automacao,
+  acao: AcaoAutomacao,
   contexto: ContextoEvento
 ): Promise<ResultadoExecucao> {
   try {
-    switch (automacao.acao as AcaoAutomacao) {
+    switch (acao.tipo) {
       case 'enviar_mensagem':
-        return await acaoEnviarMensagem(automacao, contexto)
+        return await acaoEnviarMensagem(automacao, acao, contexto)
       case 'criar_tarefa':
-        return await acaoCriarTarefa(automacao, contexto)
+        return await acaoCriarTarefa(automacao, acao, contexto)
       case 'disparar_campanha':
-        return await acaoDispararCampanha(automacao, contexto)
+        return await acaoDispararCampanha(automacao, acao, contexto)
       default:
         return {
           automacao_id: automacao.id,
           automacao_nome: automacao.nome,
           sucesso: false,
-          acao: automacao.acao,
-          erro: `Ação desconhecida: ${automacao.acao}`,
+          acao_tipo: acao.tipo,
+          erro: `Ação desconhecida: ${acao.tipo}`,
         }
     }
   } catch (err: any) {
@@ -169,7 +166,7 @@ async function executarAcao(
       automacao_id: automacao.id,
       automacao_nome: automacao.nome,
       sucesso: false,
-      acao: automacao.acao,
+      acao_tipo: acao.tipo,
       erro: err.message,
     }
   }
@@ -177,7 +174,8 @@ async function executarAcao(
 
 // ─── Ação: Enviar Mensagem ────────────────────────────────────
 async function acaoEnviarMensagem(
-  automacao: any,
+  automacao: Automacao,
+  acao: AcaoAutomacao,
   contexto: ContextoEvento
 ): Promise<ResultadoExecucao> {
   const supabase = criarClienteServidor()
@@ -197,7 +195,7 @@ async function acaoEnviarMensagem(
         automacao_id: automacao.id,
         automacao_nome: automacao.nome,
         sucesso: false,
-        acao: 'enviar_mensagem',
+        acao_tipo: 'enviar_mensagem',
         erro: 'Paciente sem telefone cadastrado',
       }
     }
@@ -209,7 +207,7 @@ async function acaoEnviarMensagem(
   if (contexto.consulta_id) {
     const { data: consulta } = await supabase
       .from('consultas')
-      .select('data_hora_inicio, data_hora_fim, medico:medicos(nome), tipo_consulta:tipos_consulta(nome)')
+      .select('data_hora_inicio, data_hora_fim, medico:medicos(nome), tipo_consulta:tipos_consulta(nome), clinica:clinicas(nome)')
       .eq('id', contexto.consulta_id)
       .single()
 
@@ -219,6 +217,7 @@ async function acaoEnviarMensagem(
       variaveis.hora_consulta = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
       variaveis.medico = (consulta.medico as any)?.nome || ''
       variaveis.tipo_consulta = (consulta.tipo_consulta as any)?.nome || ''
+      variaveis.nome_clinica = (consulta.clinica as any)?.nome || ''
     }
   }
 
@@ -228,21 +227,18 @@ async function acaoEnviarMensagem(
   }
 
   // Processar template da mensagem
-  const conteudo = processarTemplateMensagem(
-    automacao.configuracao?.template || automacao.template_mensagem || '',
-    variaveis
-  )
+  const conteudo = processarTemplateMensagem(acao.template || '', variaveis)
 
   // Inserir mensagem na fila de envio
   const { error } = await supabase.from('mensagens').insert({
     clinica_id: contexto.clinica_id,
     paciente_id: contexto.paciente_id,
-    canal: automacao.configuracao?.canal || 'whatsapp',
-    direcao: 'saida',
+    consulta_id: contexto.consulta_id,
+    automacao_id: automacao.id,
+    canal: acao.canal || 'whatsapp',
     conteudo,
     status: 'pendente',
     origem: 'automacao',
-    referencia_id: automacao.id,
   })
 
   if (error) throw new Error(error.message)
@@ -251,65 +247,61 @@ async function acaoEnviarMensagem(
     automacao_id: automacao.id,
     automacao_nome: automacao.nome,
     sucesso: true,
-    acao: 'enviar_mensagem',
+    acao_tipo: 'enviar_mensagem',
     mensagem: `Mensagem enfileirada para ${variaveis.telefone || 'paciente'}`,
   }
 }
 
 // ─── Ação: Criar Tarefa ───────────────────────────────────────
 async function acaoCriarTarefa(
-  automacao: any,
+  automacao: Automacao,
+  acao: AcaoAutomacao,
   contexto: ContextoEvento
 ): Promise<ResultadoExecucao> {
   const supabase = criarClienteServidor()
 
-  const config = automacao.configuracao || {}
-  const vencimentoHoras = config.vencimento_horas || 24
-  const vencimento = new Date(Date.now() + vencimentoHoras * 3600000).toISOString()
+  const vencimento = new Date(Date.now() + 24 * 3600000).toISOString() // 24h padrão
 
   await supabase.from('notificacoes').insert({
     clinica_id: contexto.clinica_id,
-    tipo: 'tarefa',
-    titulo: config.titulo || automacao.nome,
-    mensagem: config.descricao || `Tarefa gerada por: ${automacao.nome}`,
-    referencia_tipo: contexto.consulta_id ? 'consulta' : contexto.paciente_id ? 'paciente' : null,
-    referencia_id: contexto.consulta_id || contexto.paciente_id || null,
-    vencimento_em: vencimento,
+    tipo: 'alerta',
+    titulo: acao.titulo || automacao.nome,
+    mensagem: acao.descricao || `Tarefa gerada por automação: ${automacao.nome}`,
+    link: contexto.consulta_id ? `/painel/agenda?consulta=${contexto.consulta_id}` : null,
     lida: false,
+    criado_em: new Date().toISOString()
   })
 
   return {
     automacao_id: automacao.id,
     automacao_nome: automacao.nome,
     sucesso: true,
-    acao: 'criar_tarefa',
-    mensagem: `Tarefa criada: ${config.titulo || automacao.nome}`,
+    acao_tipo: 'criar_tarefa',
+    mensagem: `Tarefa criada: ${acao.titulo || automacao.nome}`,
   }
 }
 
 // ─── Ação: Disparar Campanha ──────────────────────────────────
 async function acaoDispararCampanha(
-  automacao: any,
+  automacao: Automacao,
+  acao: AcaoAutomacao,
   contexto: ContextoEvento
 ): Promise<ResultadoExecucao> {
   const supabase = criarClienteServidor()
-  const config = automacao.configuracao || {}
 
-  if (!config.campanha_id) {
+  if (!acao.campanha_id) {
     throw new Error('campanha_id não configurado na automação')
   }
 
-  // Ativar campanha ou adicionar paciente à campanha
+  // Adicionar paciente à fila da campanha
   if (contexto.paciente_id) {
     await supabase.from('mensagens').insert({
       clinica_id: contexto.clinica_id,
       paciente_id: contexto.paciente_id,
-      canal: 'whatsapp',
-      direcao: 'saida',
-      conteudo: '',           // preenchido pelo processador da campanha
+      canal: acao.canal || 'whatsapp',
+      conteudo: 'Adicionado via automação',
       status: 'pendente',
-      origem: 'campanha_automacao',
-      referencia_id: config.campanha_id,
+      campanha_id: acao.campanha_id,
     })
   }
 
@@ -317,18 +309,18 @@ async function acaoDispararCampanha(
     automacao_id: automacao.id,
     automacao_nome: automacao.nome,
     sucesso: true,
-    acao: 'disparar_campanha',
-    mensagem: `Paciente adicionado à campanha ${config.campanha_id}`,
+    acao_tipo: 'disparar_campanha',
+    mensagem: `Paciente adicionado à campanha ${acao.campanha_id}`,
   }
 }
 
 // ─── Agendar execução com delay ───────────────────────────────
 async function agendarExecucaoComDelay(
-  automacao: any,
+  automacao: Automacao,
   contexto: ContextoEvento
 ): Promise<void> {
   const supabase = criarClienteServidor()
-  const executarEm = new Date(Date.now() + automacao.delay_horas * 3600000).toISOString()
+  const executarEm = new Date(Date.now() + (automacao.delay_horas || 0) * 3600000).toISOString()
 
   await supabase.from('execucoes_automacoes').insert({
     automacao_id: automacao.id,
@@ -355,7 +347,7 @@ async function registrarExecucao(
     consulta_id: contexto.consulta_id,
     status: resultado.sucesso ? 'concluida' : 'erro',
     executado_em: new Date().toISOString(),
-    resultado: { mensagem: resultado.mensagem, erro: resultado.erro },
+    resultado: { mensagem: resultado.mensagem, erro: resultado.erro, acao: resultado.acao_tipo },
     contexto: contexto.dados_extras || {},
   })
 }
@@ -380,7 +372,7 @@ export async function processarConsultasAmanha(): Promise<{ total: number; dispa
     .is('lembrete_enviado_em', null)
 
   let disparados = 0
-  for (const c of consultas || []) {
+  for (const c of (consultas || [])) {
     const resultados = await dispararEvento('consulta_amanha', {
       clinica_id: c.clinica_id,
       paciente_id: c.paciente_id,
@@ -411,7 +403,7 @@ export async function processarConsultasHoje(): Promise<{ total: number; dispara
     .in('status', ['agendado', 'confirmado'])
 
   let disparados = 0
-  for (const c of consultas || []) {
+  for (const c of (consultas || [])) {
     const resultados = await dispararEvento('consulta_hoje', {
       clinica_id: c.clinica_id,
       paciente_id: c.paciente_id,
@@ -429,7 +421,6 @@ export async function processarAniversariantes(): Promise<{ total: number; dispa
   const mes = String(hoje.getMonth() + 1).padStart(2, '0')
   const dia = String(hoje.getDate()).padStart(2, '0')
 
-  // Buscar pacientes com aniversário hoje (comparar mês e dia do campo data_nascimento)
   const { data: pacientes } = await supabase
     .from('pacientes')
     .select('id, clinica_id, nome')
@@ -437,7 +428,7 @@ export async function processarAniversariantes(): Promise<{ total: number; dispa
     .like('data_nascimento', `%-${mes}-${dia}`)
 
   let disparados = 0
-  for (const p of pacientes || []) {
+  for (const p of (pacientes || [])) {
     const resultados = await dispararEvento('aniversario_paciente', {
       clinica_id: p.clinica_id,
       paciente_id: p.id,
@@ -455,15 +446,14 @@ export async function processarPacientesInativos(
   const supabase = criarClienteServidor()
   const limite = new Date(Date.now() - diasSemConsulta * 86400000).toISOString()
 
-  // Pacientes cuja última consulta foi antes do limite
   const { data: pacientes } = await supabase
     .from('pacientes')
     .select('id, clinica_id, nome')
-    .eq('ativo', true)
-    .lt('ultima_consulta_em', limite)
+    .eq('status', 'ativo')
+    .or(`ultimo_atendimento.lt.${limite},ultimo_atendimento.is.null`)
 
   let disparados = 0
-  for (const p of pacientes || []) {
+  for (const p of (pacientes || [])) {
     const resultados = await dispararEvento('paciente_inativo', {
       clinica_id: p.clinica_id,
       paciente_id: p.id,
@@ -487,22 +477,28 @@ export async function processarExecucoesAgendadas(): Promise<{ processadas: numb
     .limit(50)
 
   let processadas = 0
-  for (const exec of execucoes || []) {
+  for (const exec of (execucoes || [])) {
+    const automacao = exec.automacao as Automacao
     const contexto: ContextoEvento = {
       clinica_id: exec.clinica_id,
       paciente_id: exec.paciente_id,
       consulta_id: exec.consulta_id,
       dados_extras: exec.contexto,
     }
-    const resultado = await executarAcao(exec.automacao, contexto)
-    await supabase
-      .from('execucoes_automacoes')
-      .update({
-        status: resultado.sucesso ? 'concluida' : 'erro',
-        executado_em: new Date().toISOString(),
-        resultado: { mensagem: resultado.mensagem, erro: resultado.erro },
-      })
-      .eq('id', exec.id)
+    
+    // Para execuções com delay, processamos todas as ações da automação
+    for (const acao of automacao.acoes) {
+      const resultado = await executarAcao(automacao, acao, contexto)
+      // Atualizamos o registro original (simplificado: pegamos o último resultado se houver múltiplas ações)
+      await supabase
+        .from('execucoes_automacoes')
+        .update({
+          status: resultado.sucesso ? 'concluida' : 'erro',
+          executado_em: new Date().toISOString(),
+          resultado: { mensagem: resultado.mensagem, erro: resultado.erro, acao: resultado.acao_tipo },
+        })
+        .eq('id', exec.id)
+    }
     processadas++
   }
   return { processadas }
@@ -514,52 +510,60 @@ export const AUTOMACOES_PADRAO = [
     nome: 'Confirmação 24h antes',
     descricao: 'Envia mensagem de confirmação de consulta 24 horas antes do horário',
     evento_gatilho: 'consulta_amanha' as EventoAutomacao,
-    acao: 'enviar_mensagem' as AcaoAutomacao,
     ativa: true,
-    delay_horas: null,
+    delay_horas: 0,
     condicoes: { sem_mensagem_ultimas_horas: 20 },
-    configuracao: {
-      canal: 'whatsapp',
-      template: 'Olá, {{nome_paciente}}! 😊 Sua consulta está marcada para *amanhã, {{data_consulta}} às {{hora_consulta}}*{{#medico}} com {{medico}}{{/medico}}. Por favor, confirme sua presença respondendo *SIM* ou nos avise se precisar remarcar.',
-    },
+    acoes: [
+      {
+        tipo: 'enviar_mensagem' as TipoAcaoAutomacao,
+        canal: 'whatsapp',
+        template: 'Olá, {{nome_paciente}}! 😊 Sua consulta está marcada para *amanhã, {{data_consulta}} às {{hora_consulta}}*{{#medico}} com {{medico}}{{/medico}}. Por favor, confirme sua presença respondendo *SIM* ou nos avise se precisar remarcar.',
+      }
+    ]
   },
   {
     nome: 'Lembrete no dia',
     descricao: 'Envia lembrete no dia da consulta pela manhã',
     evento_gatilho: 'consulta_hoje' as EventoAutomacao,
-    acao: 'enviar_mensagem' as AcaoAutomacao,
     ativa: true,
-    delay_horas: null,
+    delay_horas: 0,
     condicoes: { sem_mensagem_ultimas_horas: 8 },
-    configuracao: {
-      canal: 'whatsapp',
-      template: 'Bom dia, {{nome_paciente}}! 👋 Só lembrando que sua consulta é *hoje às {{hora_consulta}}*. Te esperamos! Se precisar de algo, estamos à disposição.',
-    },
+    acoes: [
+      {
+        tipo: 'enviar_mensagem' as TipoAcaoAutomacao,
+        canal: 'whatsapp',
+        template: 'Bom dia, {{nome_paciente}}! 👋 Só lembrando que sua consulta é *hoje às {{hora_consulta}}*. Te esperamos! Se precisar de algo, estamos à disposição.',
+      }
+    ]
   },
   {
     nome: 'Mensagem de Aniversário',
     descricao: 'Envia felicitações no aniversário do paciente',
     evento_gatilho: 'aniversario_paciente' as EventoAutomacao,
-    acao: 'enviar_mensagem' as AcaoAutomacao,
     ativa: true,
-    delay_horas: null,
+    delay_horas: 0,
     condicoes: {},
-    configuracao: {
-      canal: 'whatsapp',
-      template: '🎂 Feliz aniversário, {{nome_paciente}}! Toda a equipe deseja um dia muito especial e cheio de saúde. Você é muito importante para nós! 🎉',
-    },
+    acoes: [
+      {
+        tipo: 'enviar_mensagem' as TipoAcaoAutomacao,
+        canal: 'whatsapp',
+        template: '🎂 Feliz aniversário, {{nome_paciente}}! Toda a equipe deseja um dia muito especial e cheio de saúde. Você é muito importante para nós! 🎉',
+      }
+    ]
   },
   {
     nome: 'Reativação de Pacientes',
     descricao: 'Envia mensagem para pacientes sem consulta há 6 meses',
     evento_gatilho: 'paciente_inativo' as EventoAutomacao,
-    acao: 'enviar_mensagem' as AcaoAutomacao,
     ativa: true,
-    delay_horas: null,
+    delay_horas: 0,
     condicoes: { dias_sem_consulta: 180 },
-    configuracao: {
-      canal: 'whatsapp',
-      template: 'Olá, {{nome_paciente}}! 💙 Sentimos sua falta! Faz um tempo que não te vemos por aqui. Que tal agendar uma consulta de revisão? Temos horários disponíveis e adoraríamos te atender novamente. Entre em contato conosco! 😊',
-    },
+    acoes: [
+      {
+        tipo: 'enviar_mensagem' as TipoAcaoAutomacao,
+        canal: 'whatsapp',
+        template: 'Olá, {{nome_paciente}}! 💙 Sentimos sua falta! Faz um tempo que não te vemos por aqui. Que tal agendar uma consulta de revisão? Temos horários disponíveis e adoraríamos te atender novamente. Entre em contato conosco! 😊',
+      }
+    ]
   },
 ]

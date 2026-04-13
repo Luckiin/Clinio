@@ -34,7 +34,7 @@ export async function gerarRelatorioGerencial(clinicaId: string, dataInicio: str
     .gte('data_hora_inicio', `${dataInicio}T00:00:00`)
     .lte('data_hora_inicio', `${dataFim}T23:59:59`)
 
-  const taxaFaltas = totalConsultasPeriodo ? (totalFaltasPeriodo / totalConsultasPeriodo) * 100 : 0
+  const taxaFaltas = totalConsultasPeriodo ? ((totalFaltasPeriodo || 0) / totalConsultasPeriodo) * 100 : 0
 
   // 3. Faturamento do Dia e do Mês
   const { data: pagamentosDia } = await supabase

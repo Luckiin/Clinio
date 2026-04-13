@@ -210,20 +210,12 @@ CREATE TABLE IF NOT EXISTS automacoes (
   clinica_id        UUID NOT NULL REFERENCES clinicas(id) ON DELETE CASCADE,
   nome              TEXT NOT NULL,
   descricao         TEXT,
-  tipo              TEXT NOT NULL CHECK (tipo IN (
-    'lembrete_consulta',
-    'confirmacao_consulta',
-    'pos_consulta',
-    'reativacao_paciente',
-    'aniversario',
-    'falta_consulta',
-    'boas_vindas'
-  )),
-  canal             TEXT NOT NULL DEFAULT 'whatsapp' CHECK (canal IN ('whatsapp', 'email', 'sms')),
-  mensagem_template TEXT NOT NULL,             -- template com variáveis como {nome}, {data}
-  antecedencia_horas INT,                      -- horas antes do evento
+  evento_gatilho    TEXT NOT NULL,             -- consulta_criada, consulta_amanha, etc
+  acoes             JSONB NOT NULL DEFAULT '[]', -- array de ações {tipo, canal, template, etc}
+  condicoes         JSONB DEFAULT '{}',         -- regras extras para disparo
+  delay_horas       INT DEFAULT 0,              -- delay em horas após o evento
   ativa             BOOLEAN NOT NULL DEFAULT true,
-  executada_total   INT DEFAULT 0,             -- contador de execuções
+  executada_total   INT DEFAULT 0,
   criado_em         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   atualizado_em     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

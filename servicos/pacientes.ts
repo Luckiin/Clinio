@@ -150,7 +150,7 @@ export async function buscarEstatisticasPacientes(clinicaId: string): Promise<Es
       .select('id', { count: 'exact', head: true })
       .eq('clinica_id', clinicaId)
       .eq('status', 'ativo')
-      .not('id', 'in', `(${[...idsComConsultaRecente].join(',') || 'null'})`)
+      .not('id', 'in', `(${Array.from(idsComConsultaRecente).join(',') || 'null'})`)
 
     semConsulta90Dias = count ?? 0
   }

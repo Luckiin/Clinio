@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { criarClienteServidor } from '@/lib/supabase-servidor'
 import { AUTOMACOES_PADRAO } from '@/servicos/motorAutomacoes'
 
@@ -25,13 +25,14 @@ export async function GET(req: NextRequest) {
       .from('automacoes')
       .select(`
         *,
+        evento:evento_gatilho,
         execucoes_automacoes(count)
       `)
       .eq('clinica_id', membro.clinica_id)
       .order('criado_em', { ascending: true })
 
     if (ativo !== null) query = query.eq('ativo', ativo === 'true')
-    if (evento) query = query.eq('evento', evento)
+    if (evento) query = query.eq('evento_gatilho', evento)
 
     const { data, error } = await query
 
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
         clinica_id: membro.clinica_id,
         nome,
         descricao,
-        evento,
+        evento_gatilho: evento,
         condicoes: condicoes ?? {},
         acoes,
         delay_horas: delay_horas ?? 0,
