@@ -141,7 +141,7 @@ export async function buscarTagsUnicas(clinicaId: string): Promise<string[]> {
     .order('tag')
 
   if (error) throw new Error(`Erro ao buscar tags: ${error.message}`)
-  const unicas = [...new Set((data ?? []).map((t: { tag: string }) => t.tag))]
+  const unicas = Array.from(new Set((data ?? []).map((t: { tag: string }) => t.tag)))
   return unicas
 }
 
