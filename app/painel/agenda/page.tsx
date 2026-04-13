@@ -459,6 +459,7 @@ export default function PaginaAgenda() {
           aberto={modalEsperaAberto}
           clinicaId={clinicaId}
           aoFechar={() => setModalEsperaAberto(false)}
+          aoAdicionar={buscarConsultas}
         />
       )}
     </div>
