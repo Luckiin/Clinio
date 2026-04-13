@@ -1,0 +1,120 @@
+﻿'use client'
+// ============================================================
+// CLINIO - Cartão de Consulta para a Agenda
+// Exibe uma consulta na visualização da agenda
+// ============================================================
+
+import { formatarHora } from '@/lib/formatadores'
+import { rotuloDaConsulta } from '@/lib/formatadores'
+import type { ConsultaComRelacoes } from '@/tipos'
+import { User, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+
+interface PropsCartaoConsulta {
+  consulta: ConsultaComRelacoes
+  aoClicar?: (consulta: ConsultaComRelacoes) => void
+  aoConfirmar?: (id: string) => void
+  aoCancelar?: (id: string) => void
+  compacto?: boolean
+}
+
+const iconesStatus: Record<string, React.ElementType> = {
+  agendado: Clock,
+  confirmado: CheckCircle,
+  em_atendimento: AlertCircle,
+  concluido: CheckCircle,
+  cancelado: XCircle,
+  faltou: XCircle,
+  remarcado: Clock,
+}
+
+const coresStatus: Record<string, string> = {
+  agendado: 'bg-blue-50 border-blue-200 hover:bg-blue-100',
+  confirmado: 'bg-green-50 border-green-200 hover:bg-green-100',
+  em_atendimento: 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100',
+  concluido: 'bg-gray-50 border-gray-200 hover:bg-gray-100',
+  cancelado: 'bg-red-50 border-red-200 opacity-60',
+  faltou: 'bg-orange-50 border-orange-200 opacity-60',
+  remarcado: 'bg-purple-50 border-purple-200 hover:bg-purple-100',
+}
+
+export function CartaoConsulta({
+  consulta,
+  aoClicar,
+  aoConfirmar,
+  aoCancelar,
+  compacto = false,
+}: PropsCartaoConsulta) {
+  const StatusIcone = iconesStatus[consulta.status] || Clock
+  const rotuloStatus = rotuloDaConsulta(consulta.status)
+
+  return (
+    <div
+      className={`
+        relative rounded-lg border p-3 cursor-pointer transition-all duration-150
+        ${coresStatus[consulta.status] || 'bg-white border-gray-200'}
+        ${aoClicar ? 'cursor-pointer' : 'cursor-default'}
+      `}
+      style={{ borderLeftWidth: 4, borderLeftColor: consulta.medico?.cor_agenda || '#3B82F6' }}
+      onClick={() => aoClicar?.(consulta)}
+    >
+      {/* Linha de horário */}
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-semibold text-gray-600">
+          {formatarHora(consulta.data_hora_inicio)} - {formatarHora(consulta.data_hora_fim)}
+        </span>
+        <div className="flex items-center gap-1">
+          <StatusIcone className="w-3.5 h-3.5 text-gray-500" />
+          <span className="text-xs text-gray-500">{rotuloStatus.texto}</span>
+        </div>
+      </div>
+
+      {/* Nome do paciente */}
+      <div className="flex items-center gap-1.5 mb-1">
+        <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <span className="text-sm font-semibold text-gray-800 truncate">
+          {consulta.paciente?.nome}
+        </span>
+      </div>
+
+      {/* Tipo de consulta e médico */}
+      {!compacto && (
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">
+            {consulta.tipo_consulta?.nome || 'Consulta'}
+          </span>
+          <span className="text-xs text-gray-500">{consulta.medico?.nome}</span>
+        </div>
+      )}
+
+      {/* Ações rápidas */}
+      {(aoConfirmar || aoCancelar) && consulta.status === 'agendado' && (
+        <div className="flex gap-2 mt-2 pt-2 border-t border-current/10">
+          {aoConfirmar && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                aoConfirmar(consulta.id)
+              }}
+              className="flex-1 text-xs bg-green-600 text-white rounded px-2 py-1
+                         hover:bg-green-700 transition-colors"
+            >
+              Confirmar
+            </button>
+          )}
+          {aoCancelar && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                aoCancelar(consulta.id)
+              }}
+              className="flex-1 text-xs bg-red-100 text-red-700 rounded px-2 py-1
+                         hover:bg-red-200 transition-colors"
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
