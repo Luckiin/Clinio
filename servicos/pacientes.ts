@@ -162,3 +162,34 @@ export async function buscarEstatisticasPacientes(clinicaId: string): Promise<Es
     inativos: inativos.count ?? 0,
   }
 }
+
+export async function buscarAniversariantes(clinicaId: string, mes: number): Promise<Paciente[]> {
+  const supabase = criarClienteServidor()
+  const mesStr = String(mes).padStart(2, '0')
+
+  const { data, error } = await supabase
+    .from('pacientes')
+    .select('*')
+    .eq('clinica_id', clinicaId)
+    .not('data_nascimento', 'is', null)
+    .filter('data_nascimento', 'like', `%-${mesStr}-%`)
+
+  if (error) throw new Error(`Erro ao buscar aniversariantes: ${error.message}`)
+  return data as Paciente[]
+}
+
+export async function buscarPacientesParaReativacao(clinicaId: string, diasSemConsulta = 90): Promise<Paciente[]> {
+  const supabase = criarClienteServidor()
+  const limite = new Date(Date.now() - diasSemConsulta * 24 * 60 * 60 * 1000).toISOString()
+
+  const { data, error } = await supabase
+    .from('pacientes')
+    .select('*')
+    .eq('clinica_id', clinicaId)
+    .eq('status', 'ativo')
+    .or(`ultimo_atendimento.lt.${limite},ultimo_atendimento.is.null`)
+    .order('ultimo_atendimento', { ascending: true })
+
+  if (error) throw new Error(`Erro ao buscar pacientes para reativação: ${error.message}`)
+  return data as Paciente[]
+}
