@@ -97,18 +97,17 @@ export async function gerarSlotsDisponiveis(
 
         if (!temConflito && !temBloqueio) {
           slots.push({
-            inicio: inicioISO,
-            fim: fimISO,
-            medicoId: medico.id,
-            medicoNome: medico.nome,
-            duracao: duracaoMedico,
+            data_hora: inicioISO,
+            medico_id: medico.id,
+            medico_nome: medico.nome,
+            duracao_minutos: duracaoMedico,
           })
         }
       }
     }
   }
 
-  return slots.sort((a, b) => a.inicio.localeCompare(b.inicio))
+  return slots.sort((a, b) => a.data_hora.localeCompare(b.data_hora))
 }
 
 // ─── Agendar consulta (com validação de conflitos) ───────────
