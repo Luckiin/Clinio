@@ -6,6 +6,7 @@
 import { redirect } from 'next/navigation'
 import { criarClienteServidor } from '@/lib/supabase-servidor'
 import { BarraLateral } from '@/componentes/layout/BarraLateral'
+import { ChatFlutuante } from '@/componentes/crm/ChatFlutuante'
 
 export default async function LayoutPainel({
   children,
@@ -47,6 +48,9 @@ export default async function LayoutPainel({
           {children}
         </div>
       </main>
+
+      {/* Chat flutuante – acessível em todas as telas */}
+      <ChatFlutuante />
     </div>
   )
 }

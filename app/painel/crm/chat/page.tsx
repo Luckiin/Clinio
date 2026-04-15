@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   MessageSquare, Send, Search, Plus, Phone,
-  Check, CheckCheck, X, Loader2, User
+  Check, CheckCheck, X, Loader2, User, ArrowLeft
 } from 'lucide-react'
+import Link from 'next/link'
 
 interface Conversa {
   id: string
@@ -102,7 +103,7 @@ export default function PaginaChat() {
         const res = await fetch(`/api/pacientes?busca=${encodeURIComponent(buscaPaciente)}&limite=8`)
         if (res.ok) {
           const dados = await res.json()
-          setPacientesEncontrados(dados.pacientes || [])
+          setPacientesEncontrados(dados.dados || [])
         }
       } catch (err) {
         console.error('Erro ao buscar pacientes:', err)
@@ -172,17 +173,27 @@ export default function PaginaChat() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="flex h-[calc(100vh-2rem)] lg:h-[calc(100vh-6rem)] bg-slate-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
       {/* Lista de conversas */}
-      <div className="w-80 flex-shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col">
-        <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Chat CRM</h2>
+      <div className="w-80 sm:w-96 flex-shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col z-10">
+        <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Link 
+                href="/painel/crm"
+                className="p-2 -ml-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
+                title="Voltar para CRM"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Mensagens</h2>
+            </div>
             <button
               onClick={() => setModalNovaConversa(true)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-primaria-600 text-white hover:bg-primaria-700 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-primaria-600 text-white hover:bg-primaria-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primaria-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+              title="Nova conversa"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
             </button>
           </div>
           <div className="relative">
@@ -409,7 +420,7 @@ export default function PaginaChat() {
                     >
                       <div className="w-8 h-8 rounded-full bg-primaria-100 dark:bg-primaria-900/40 flex items-center justify-center flex-shrink-0">
                         <span className="text-xs font-bold text-primaria-600 dark:text-primaria-400">
-                          {paciente.nome_completo.charAt(0).toUpperCase()}
+                          {paciente.nome_completo?.charAt(0)?.toUpperCase() || '?'}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">

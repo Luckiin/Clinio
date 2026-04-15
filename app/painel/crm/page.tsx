@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   Users, MessageSquare, Target, TrendingUp, AlertCircle,
   Phone, Mail, Star, Clock, Activity, ChevronRight,
-  Search, Filter, Plus, BarChart2, Zap, Heart
+  Search, Filter, Plus, BarChart2, Zap, Heart, Kanban, Tag, List
 } from 'lucide-react'
 import Link from 'next/link'
 import type { MetricasCRM, OportunidadePaciente, RadarOportunidade } from '@/tipos'
@@ -43,6 +43,7 @@ export default function PaginaCRM() {
   const [carregando, setCarregando] = useState(true)
   const [abaAtiva, setAbaAtiva] = useState<'radar' | 'oportunidades' | 'inativos'>('radar')
   const [busca, setBusca] = useState('')
+  const [modoVisualizacao, setModoVisualizacao] = useState<'lista' | 'kanban'>('lista')
 
   const carregarDados = useCallback(async () => {
     setCarregando(true)
@@ -179,32 +180,60 @@ export default function PaginaCRM() {
 
       {/* Seção Principal: Abas */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        {/* Abas */}
-        <div className="flex items-center border-b border-slate-200 dark:border-slate-700 px-6 pt-4">
-          {[
-            { key: 'radar', label: 'Radar de Oportunidades', count: radar.length },
-            { key: 'oportunidades', label: 'Oportunidades Abertas', count: oportunidades.length },
-            { key: 'inativos', label: 'Pacientes Inativos', count: inativos.length },
-          ].map((aba) => (
+        {/* Abas + Toggle de visualização */}
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-6 pt-4">
+          <div className="flex">
+            {[
+              { key: 'radar', label: 'Radar de Oportunidades', count: radar.length },
+              { key: 'oportunidades', label: 'Oportunidades Abertas', count: oportunidades.length },
+              { key: 'inativos', label: 'Pacientes Inativos', count: inativos.length },
+            ].map((aba) => (
+              <button
+                key={aba.key}
+                onClick={() => setAbaAtiva(aba.key as typeof abaAtiva)}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors mr-2 ${
+                  abaAtiva === aba.key
+                    ? 'border-primaria-500 text-primaria-600 dark:text-primaria-400'
+                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+              >
+                {aba.label}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${
+                  abaAtiva === aba.key
+                    ? 'bg-primaria-100 text-primaria-700 dark:bg-primaria-900/40 dark:text-primaria-400'
+                    : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                }`}>
+                  {aba.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Toggle Lista / Kanban */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1 mb-2">
             <button
-              key={aba.key}
-              onClick={() => setAbaAtiva(aba.key as typeof abaAtiva)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors mr-2 ${
-                abaAtiva === aba.key
-                  ? 'border-primaria-500 text-primaria-600 dark:text-primaria-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+              onClick={() => setModoVisualizacao('lista')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                modoVisualizacao === 'lista'
+                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
               }`}
             >
-              {aba.label}
-              <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${
-                abaAtiva === aba.key
-                  ? 'bg-primaria-100 text-primaria-700 dark:bg-primaria-900/40 dark:text-primaria-400'
-                  : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
-              }`}>
-                {aba.count}
-              </span>
+              <List className="w-3.5 h-3.5" />
+              Lista
             </button>
-          ))}
+            <button
+              onClick={() => setModoVisualizacao('kanban')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                modoVisualizacao === 'kanban'
+                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+              }`}
+            >
+              <Kanban className="w-3.5 h-3.5" />
+              Kanban
+            </button>
+          </div>
         </div>
 
         {/* Barra de busca */}
@@ -222,17 +251,19 @@ export default function PaginaCRM() {
         </div>
 
         {/* Conteúdo das abas */}
-        <div className="overflow-y-auto max-h-[500px]">
-          {abaAtiva === 'radar' && (
-            <TabelaRadar dados={radarFiltrado} />
-          )}
-          {abaAtiva === 'oportunidades' && (
-            <TabelaOportunidades dados={oportunidadesFiltradas} onAtualizar={carregarDados} />
-          )}
-          {abaAtiva === 'inativos' && (
-            <TabelaInativos dados={inativosFiltrados} />
-          )}
-        </div>
+        {modoVisualizacao === 'lista' ? (
+          <div className="overflow-y-auto max-h-[500px]">
+            {abaAtiva === 'radar' && <TabelaRadar dados={radarFiltrado} />}
+            {abaAtiva === 'oportunidades' && <TabelaOportunidades dados={oportunidadesFiltradas} onAtualizar={carregarDados} />}
+            {abaAtiva === 'inativos' && <TabelaInativos dados={inativosFiltrados} />}
+          </div>
+        ) : (
+          <div className="overflow-x-auto p-4">
+            {abaAtiva === 'radar' && <KanbanRadar dados={radarFiltrado} />}
+            {abaAtiva === 'oportunidades' && <KanbanOportunidades dados={oportunidadesFiltradas} onAtualizar={carregarDados} />}
+            {abaAtiva === 'inativos' && <KanbanInativos dados={inativosFiltrados} />}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -290,6 +321,7 @@ function TabelaRadar({ dados }: { dados: RadarOportunidade[] }) {
       <thead className="bg-slate-50 dark:bg-slate-700/50">
         <tr>
           <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Paciente</th>
+          <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Tags</th>
           <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Último Procedimento</th>
           <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Dias Sem Consulta</th>
           <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Prioridade</th>
@@ -315,6 +347,30 @@ function TabelaRadar({ dados }: { dados: RadarOportunidade[] }) {
                     <p className="text-xs text-slate-400">{r.telefone}</p>
                   )}
                 </div>
+              </div>
+            </td>
+            <td className="px-6 py-4">
+              <div className="flex flex-wrap gap-1 max-w-[160px]">
+                {r.tags && r.tags.length > 0 ? (
+                  r.tags.map((t, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                      style={{ backgroundColor: t.cor || '#6366F1' }}
+                    >
+                      {t.tag}
+                    </span>
+                  ))
+                ) : (
+                  <Link
+                    href={`/painel/crm/pacientes/${r.paciente_id}`}
+                    className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-primaria-500 transition-colors"
+                    title="Adicionar tag no perfil do paciente"
+                  >
+                    <Tag className="w-3 h-3" />
+                    <span>+ tag</span>
+                  </Link>
+                )}
               </div>
             </td>
             <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
@@ -533,5 +589,226 @@ function TabelaInativos({ dados }: { dados: PacienteInativo[] }) {
         ))}
       </tbody>
     </table>
+  )
+}
+
+// ─── Kanban Components ────────────────────────────────────────
+
+function KanbanColuna({
+  titulo, cor, corBg, count, children
+}: {
+  titulo: string; cor: string; corBg: string; count: number; children: React.ReactNode
+}) {
+  return (
+    <div className="flex-shrink-0 w-60 flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 overflow-hidden">
+      <div className={`px-3 py-2.5 ${corBg} flex items-center justify-between`}>
+        <span className={`text-xs font-bold ${cor}`}>{titulo}</span>
+        <span className={`text-xs font-bold px-2 py-0.5 rounded-full bg-white/60 dark:bg-black/20 ${cor}`}>{count}</span>
+      </div>
+      <div className="flex-1 p-2 space-y-2 min-h-[200px] max-h-[400px] overflow-y-auto">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function KanbanRadar({ dados }: { dados: RadarOportunidade[] }) {
+  const colunas: { key: 'alta' | 'media' | 'baixa'; label: string; cor: string; corBg: string }[] = [
+    { key: 'alta', label: 'Alta Prioridade', cor: 'text-red-600', corBg: 'bg-red-50 dark:bg-red-900/20' },
+    { key: 'media', label: 'Média Prioridade', cor: 'text-amber-600', corBg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { key: 'baixa', label: 'Baixa Prioridade', cor: 'text-green-600', corBg: 'bg-green-50 dark:bg-green-900/20' },
+  ]
+
+  if (!dados.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+        <Activity className="w-10 h-10 mb-3 opacity-40" />
+        <p className="font-medium">Nenhuma oportunidade identificada</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex gap-3">
+      {colunas.map(col => {
+        const pacientes = dados.filter(r => r.prioridade === col.key)
+        return (
+          <KanbanColuna key={col.key} titulo={col.label} cor={col.cor} corBg={col.corBg} count={pacientes.length}>
+            {pacientes.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-4">Nenhum paciente</p>
+            ) : pacientes.map(r => (
+              <Link
+                key={r.paciente_id}
+                href={`/painel/crm/pacientes/${r.paciente_id}`}
+                className="block bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:border-primaria-200 dark:hover:border-primaria-700 hover:shadow-sm transition-all"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primaria-400 to-primaria-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {r.paciente_nome.charAt(0).toUpperCase()}
+                  </div>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{r.paciente_nome}</p>
+                </div>
+                <p className="text-[11px] text-slate-500 mb-2">
+                  {r.dias_desde_ultimo === 999 ? '🔴 Nunca consultou' : `⏱ ${r.dias_desde_ultimo} dias sem consulta`}
+                </p>
+                {r.tags && r.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {r.tags.map((t, i) => (
+                      <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: t.cor || '#6366F1' }}>
+                        {t.tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {r.telefone_whatsapp && (
+                  <a
+                    href={`https://wa.me/55${r.telefone_whatsapp.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    className="flex items-center gap-1 text-[11px] text-green-600 hover:underline"
+                  >
+                    <MessageSquare className="w-3 h-3" />
+                    WhatsApp
+                  </a>
+                )}
+              </Link>
+            ))}
+          </KanbanColuna>
+        )
+      })}
+    </div>
+  )
+}
+
+function KanbanOportunidades({
+  dados, onAtualizar
+}: {
+  dados: OportunidadePaciente[]
+  onAtualizar: () => void
+}) {
+  const colunas: { key: string; label: string; cor: string; corBg: string }[] = [
+    { key: 'aberta', label: 'Aberta', cor: 'text-blue-600', corBg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { key: 'em_contato', label: 'Em Contato', cor: 'text-amber-600', corBg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { key: 'convertida', label: 'Convertida', cor: 'text-green-600', corBg: 'bg-green-50 dark:bg-green-900/20' },
+    { key: 'cancelada', label: 'Cancelada', cor: 'text-slate-500', corBg: 'bg-slate-100 dark:bg-slate-700' },
+  ]
+
+  const moverStatus = async (id: string, novoStatus: string) => {
+    await fetch(`/api/crm/oportunidades?id=${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: novoStatus }),
+    })
+    onAtualizar()
+  }
+
+  if (!dados.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+        <Target className="w-10 h-10 mb-3 opacity-40" />
+        <p className="font-medium">Nenhuma oportunidade aberta</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex gap-3">
+      {colunas.map(col => {
+        const itens = dados.filter(o => o.status === col.key)
+        return (
+          <KanbanColuna key={col.key} titulo={col.label} cor={col.cor} corBg={col.corBg} count={itens.length}>
+            {itens.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-4">Nenhuma</p>
+            ) : itens.map(o => (
+              <div key={o.id} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:shadow-sm transition-shadow">
+                <Link href={`/painel/crm/pacientes/${o.paciente_id}`} className="text-xs font-semibold text-slate-800 dark:text-slate-200 hover:text-primaria-600 block truncate mb-1">
+                  {o.paciente?.nome ?? '—'}
+                </Link>
+                <p className="text-[11px] text-slate-500 line-clamp-2 mb-2">{o.descricao}</p>
+                <div className="flex items-center justify-between">
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold border ${CORES_PRIORIDADE[o.prioridade]}`}>
+                    {o.prioridade}
+                  </span>
+                  <select
+                    className="text-[10px] bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md px-1.5 py-0.5 text-slate-600 dark:text-slate-300"
+                    value={o.status}
+                    onChange={e => moverStatus(o.id, e.target.value)}
+                  >
+                    <option value="aberta">Aberta</option>
+                    <option value="em_contato">Em Contato</option>
+                    <option value="convertida">Convertida</option>
+                    <option value="cancelada">Cancelada</option>
+                  </select>
+                </div>
+              </div>
+            ))}
+          </KanbanColuna>
+        )
+      })}
+    </div>
+  )
+}
+
+function KanbanInativos({ dados }: { dados: PacienteInativo[] }) {
+  const colunas = [
+    { key: 'recente', label: '90–180 dias', cor: 'text-yellow-600', corBg: 'bg-yellow-50 dark:bg-yellow-900/20', filtro: (p: PacienteInativo) => p.dias_sem_consulta >= 90 && p.dias_sem_consulta < 180 },
+    { key: 'longo', label: '180–365 dias', cor: 'text-orange-600', corBg: 'bg-orange-50 dark:bg-orange-900/20', filtro: (p: PacienteInativo) => p.dias_sem_consulta >= 180 && p.dias_sem_consulta < 365 },
+    { key: 'critico', label: 'Mais de 1 ano', cor: 'text-red-600', corBg: 'bg-red-50 dark:bg-red-900/20', filtro: (p: PacienteInativo) => p.dias_sem_consulta >= 365 && p.dias_sem_consulta < 999 },
+    { key: 'nunca', label: 'Nunca consultou', cor: 'text-slate-600', corBg: 'bg-slate-100 dark:bg-slate-700', filtro: (p: PacienteInativo) => p.dias_sem_consulta === 999 },
+  ]
+
+  if (!dados.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+        <Clock className="w-10 h-10 mb-3 opacity-40" />
+        <p className="font-medium">Nenhum paciente inativo</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex gap-3">
+      {colunas.map(col => {
+        const pacientes = dados.filter(col.filtro)
+        return (
+          <KanbanColuna key={col.key} titulo={col.label} cor={col.cor} corBg={col.corBg} count={pacientes.length}>
+            {pacientes.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-4">Nenhum paciente</p>
+            ) : pacientes.map(p => (
+              <div key={p.id} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:shadow-sm transition-shadow">
+                <Link href={`/painel/crm/pacientes/${p.id}`} className="text-xs font-semibold text-slate-800 dark:text-slate-200 hover:text-primaria-600 block truncate mb-1">
+                  {p.nome}
+                </Link>
+                <p className="text-[11px] text-slate-400 mb-2">
+                  {p.ultima_consulta
+                    ? `Última: ${new Date(p.ultima_consulta).toLocaleDateString('pt-BR')}`
+                    : 'Sem consultas'}
+                </p>
+                <div className="flex items-center gap-2">
+                  {p.telefone && (
+                    <a
+                      href={`https://wa.me/55${p.telefone.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-[11px] text-green-600 hover:underline"
+                    >
+                      <MessageSquare className="w-3 h-3" />
+                      WhatsApp
+                    </a>
+                  )}
+                  {p.email && (
+                    <a href={`mailto:${p.email}`} className="flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
+                      <Mail className="w-3 h-3" />
+                      Email
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </KanbanColuna>
+        )
+      })}
+    </div>
   )
 }

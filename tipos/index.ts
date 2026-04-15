@@ -848,4 +848,5 @@ export interface RadarOportunidade {
   dias_desde_ultimo: number
   tipo_oportunidade: TipoOportunidade
   prioridade: PrioridadeOportunidade
+  tags?: Array<{ tag: string; cor: string }>
 }

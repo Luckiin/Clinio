@@ -849,6 +849,21 @@ export async function buscarRadarOportunidades(
 
   const resultados: RadarOportunidade[] = []
 
+  // Buscar todas as tags dos pacientes ativos em uma única query
+  const pacienteIds = (pacientesAtivos ?? []).map((p: any) => p.id)
+  const { data: todasTags } = pacienteIds.length
+    ? await supabase
+        .from('crm_tags')
+        .select('paciente_id, tag, cor')
+        .in('paciente_id', pacienteIds)
+    : { data: [] }
+
+  const tagsPorPaciente: Record<string, Array<{ tag: string; cor: string }>> = {}
+  for (const t of (todasTags ?? []) as Array<{ paciente_id: string; tag: string; cor: string }>) {
+    if (!tagsPorPaciente[t.paciente_id]) tagsPorPaciente[t.paciente_id] = []
+    tagsPorPaciente[t.paciente_id].push({ tag: t.tag, cor: t.cor })
+  }
+
   for (const paciente of (pacientesAtivos ?? []) as Array<{
     id: string; nome: string; telefone?: string; telefone_whatsapp?: string
   }>) {
@@ -862,6 +877,8 @@ export async function buscarRadarOportunidades(
       .limit(1)
       .maybeSingle()
 
+    const tags = tagsPorPaciente[paciente.id] || []
+
     if (!ultimaConsulta) {
       // Nunca teve consulta — oportunidade de primeira consulta
       resultados.push({
@@ -873,6 +890,7 @@ export async function buscarRadarOportunidades(
         dias_desde_ultimo: 999,
         tipo_oportunidade: 'avaliacao_pendente',
         prioridade: 'alta',
+        tags,
       })
     } else {
       const dataUltima = new Date((ultimaConsulta as { data_hora_inicio: string }).data_hora_inicio)
@@ -894,6 +912,7 @@ export async function buscarRadarOportunidades(
           dias_desde_ultimo: diasDesde,
           tipo_oportunidade: 'retorno_consulta',
           prioridade,
+          tags,
         })
       }
     }

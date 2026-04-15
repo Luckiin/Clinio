@@ -33,6 +33,8 @@ export default function PaginaCampanhasCRM() {
   const [modalNova, setModalNova] = useState(false)
   const [previewTotal, setPreviewTotal] = useState<number | null>(null)
   const [carregandoPreview, setCarregandoPreview] = useState(false)
+  const [salvando, setSalvando] = useState(false)
+  const [erroCampanha, setErroCampanha] = useState<string | null>(null)
 
   // Formulário
   const [form, setForm] = useState({
@@ -84,8 +86,10 @@ export default function PaginaCampanhasCRM() {
 
   const criarCampanha = async () => {
     if (!form.nome || !form.mensagem_template) return
+    setSalvando(true)
+    setErroCampanha(null)
     try {
-      await fetch('/api/crm/campanhas', {
+      const resp = await fetch('/api/crm/campanhas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -100,12 +104,19 @@ export default function PaginaCampanhasCRM() {
           agendada_para: form.agendada_para || undefined,
         }),
       })
+      if (!resp.ok) {
+        const dados = await resp.json().catch(() => ({}))
+        throw new Error(dados.erro || `Erro ao salvar campanha (${resp.status})`)
+      }
       setModalNova(false)
       setForm({ nome: '', descricao: '', tipo: 'marketing', canal: 'whatsapp', mensagem_template: '', filtro_dias_sem_consulta: '', filtro_tags: '', filtro_cidade: '', agendada_para: '' })
       setPreviewTotal(null)
       await carregarCampanhas()
-    } catch (err) {
+    } catch (err: unknown) {
+      setErroCampanha((err as Error).message)
       console.error('Erro ao criar campanha:', err)
+    } finally {
+      setSalvando(false)
     }
   }
 
@@ -400,20 +411,31 @@ export default function PaginaCampanhasCRM() {
               </div>
             </div>
 
+            <div className="px-6 pb-2">
+              {erroCampanha && (
+                <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2">
+                  ⚠️ {erroCampanha}
+                </p>
+              )}
+            </div>
             <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
               <button
-                onClick={() => { setModalNova(false); setPreviewTotal(null) }}
+                onClick={() => { setModalNova(false); setPreviewTotal(null); setErroCampanha(null) }}
                 className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={criarCampanha}
-                disabled={!form.nome || !form.mensagem_template}
+                disabled={!form.nome || !form.mensagem_template || salvando}
                 className="flex items-center gap-2 px-4 py-2 bg-primaria-600 text-white rounded-xl text-sm font-medium hover:bg-primaria-700 disabled:opacity-50 transition-colors"
               >
-                <Zap className="w-4 h-4" />
-                Criar Campanha
+                {salvando ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                ) : (
+                  <Zap className="w-4 h-4" />
+                )}
+                {salvando ? 'Salvando...' : 'Criar Campanha'}
               </button>
             </div>
           </div>
