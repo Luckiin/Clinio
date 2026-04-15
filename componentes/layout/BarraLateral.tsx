@@ -20,7 +20,8 @@ import {
   ChevronLeft,
   Moon,
   Sun,
-  Heart
+  Heart,
+  Plug
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
@@ -44,6 +45,7 @@ const itensNavegacao: ItemNavegacao[] = [
   { rotulo: 'Campanhas',      href: '/painel/campanhas',   icone: Megaphone },
   { rotulo: 'Médicos',        href: '/painel/medicos',     icone: Stethoscope },
   { rotulo: 'Relatórios',     href: '/painel/relatorios',  icone: BarChart2 },
+  { rotulo: 'Integrações',    href: '/painel/integracoes', icone: Plug },
   { rotulo: 'Configurações',  href: '/painel/configuracoes',icone: Settings },
 ]
 

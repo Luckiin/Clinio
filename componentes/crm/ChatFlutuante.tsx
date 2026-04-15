@@ -33,8 +33,11 @@ interface Mensagem {
 
 interface Paciente {
   id: string
-  nome_completo: string
+  nome_completo?: string
+  nome?: string
   telefone?: string
+  email?: string
+  cpf?: string
 }
 
 export function ChatFlutuante() {
@@ -54,25 +57,27 @@ export function ChatFlutuante() {
   const [pacientesEncontrados, setPacientesEncontrados] = useState<Paciente[]>([])
   const [buscandoPaciente, setBuscandoPaciente] = useState(false)
   const [criandoConversa, setCriandoConversa] = useState(false)
-  const [canalNovo, setCanalNovo] = useState<'interno' | 'whatsapp' | 'email'>('interno')
 
   const fimRef = useRef<HTMLDivElement>(null)
   const timeoutBuscaRef = useRef<NodeJS.Timeout>()
 
   const carregarConversas = useCallback(async () => {
-    if (!aberto) return
+    if (!aberto) return [] as Conversa[]
     setCarregando(true)
     try {
       const res = await fetch('/api/crm/conversas')
       if (res.ok) {
         const dados = await res.json()
-        setConversas(dados.conversas || [])
+        const lista = dados.conversas || []
+        setConversas(lista)
+        return lista as Conversa[]
       }
     } catch (err) {
       console.error('Erro ao carregar conversas:', err)
     } finally {
       setCarregando(false)
     }
+    return [] as Conversa[]
   }, [aberto])
 
   useEffect(() => {
@@ -152,12 +157,15 @@ export function ChatFlutuante() {
       const res = await fetch('/api/crm/conversas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paciente_id: paciente.id, canal: canalNovo, conteudo: null }),
+        body: JSON.stringify({ paciente_id: paciente.id, canal: 'whatsapp', conteudo: null }),
       })
       if (res.ok) {
         const dados = await res.json()
-        await carregarConversas()
-        if (dados.conversa) setConversaSelecionada(dados.conversa)
+        const listaAtualizada = await carregarConversas()
+        if (dados.conversa) {
+          const conversaAtualizada = listaAtualizada.find((c) => c.id === dados.conversa.id)
+          setConversaSelecionada(conversaAtualizada || dados.conversa)
+        }
         setModalNovaConversa(false)
         setBuscaPaciente('')
         setPacientesEncontrados([])
@@ -169,6 +177,10 @@ export function ChatFlutuante() {
     }
   }
 
+  function obterNomePaciente(paciente: Paciente) {
+    return paciente.nome_completo || paciente.nome || 'Paciente'
+  }
+
   function formatarHora(data: string | null) {
     if (!data) return ''
     const d = new Date(data)
@@ -178,7 +190,7 @@ export function ChatFlutuante() {
   }
 
   const conversasFiltradas = conversas.filter(c =>
-    c.pacientes?.nome_completo.toLowerCase().includes(busca.toLowerCase())
+    (c.pacientes?.nome_completo ?? '').toLowerCase().includes(busca.toLowerCase())
   )
 
   return (
@@ -299,25 +311,9 @@ export function ChatFlutuante() {
                 <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Nova Conversa</h3>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {/* Canal */}
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Canal</p>
-                  <div className="flex gap-2">
-                    {(['interno', 'whatsapp', 'email'] as const).map(canal => (
-                      <button
-                        key={canal}
-                        onClick={() => setCanalNovo(canal)}
-                        className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-all ${
-                          canalNovo === canal
-                            ? 'bg-primaria-50 dark:bg-primaria-900/30 border-primaria-300 dark:border-primaria-700 text-primaria-700 dark:text-primaria-400'
-                            : 'border-slate-200 dark:border-slate-700 text-slate-500'
-                        }`}
-                      >
-                        {canal === 'interno' ? 'Chat' : canal === 'whatsapp' ? 'WhatsApp' : 'E-mail'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2">
+                  Novas conversas são iniciadas automaticamente via WhatsApp.
+                </p>
 
                 {/* Busca de paciente */}
                 <div>
@@ -350,12 +346,16 @@ export function ChatFlutuante() {
                       >
                         <div className="w-7 h-7 rounded-full bg-primaria-100 dark:bg-primaria-900/40 flex items-center justify-center flex-shrink-0">
                           <span className="text-xs font-bold text-primaria-600 dark:text-primaria-400">
-                            {paciente.nome_completo?.charAt(0)?.toUpperCase() || '?'}
+                            {obterNomePaciente(paciente).charAt(0)?.toUpperCase() || '?'}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{paciente.nome_completo}</p>
-                          {paciente.telefone && <p className="text-xs text-slate-400">{paciente.telefone}</p>}
+                          <p className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">
+                            {obterNomePaciente(paciente)}
+                          </p>
+                          <p className="text-xs text-slate-400 truncate">
+                            {[paciente.telefone, paciente.email, paciente.cpf].filter(Boolean).join(' · ') || `ID: ${paciente.id.slice(0, 8)}`}
+                          </p>
                         </div>
                         {criandoConversa
                           ? <Loader2 className="w-3.5 h-3.5 animate-spin text-primaria-500" />

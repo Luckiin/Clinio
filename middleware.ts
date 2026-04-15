@@ -8,6 +8,21 @@ import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(requisicao: NextRequest) {
+  const caminhoAtual = requisicao.nextUrl.pathname
+
+  // ── APIs públicas: liberar ANTES de qualquer chamada ao Supabase ──
+  // Isso é crítico para webhooks externos (Meta, etc.) que não têm cookies
+  const ehApiPublicaImediata =
+    caminhoAtual.startsWith('/api/whatsapp/') ||      // webhooks WhatsApp
+    caminhoAtual.startsWith('/api/agendamento-publico') ||
+    caminhoAtual.startsWith('/api/agenda/slots') ||
+    caminhoAtual.startsWith('/api/clinicas') ||       // cadastro de clínica
+    caminhoAtual.startsWith('/api/auth')              // autenticação
+
+  if (ehApiPublicaImediata) {
+    return NextResponse.next({ request: { headers: requisicao.headers } })
+  }
+
   let resposta = NextResponse.next({
     request: {
       headers: requisicao.headers,
@@ -43,7 +58,12 @@ export async function middleware(requisicao: NextRequest) {
   // Verificar sessão atual
   const { data: { session } } = await supabase.auth.getSession()
 
-  const caminhoAtual = requisicao.nextUrl.pathname
+  // ── Raiz do site: roteia sem parâmetros na URL ──────────────
+  if (caminhoAtual === '/') {
+    return NextResponse.redirect(
+      new URL(session ? '/painel' : '/autenticacao/entrar', requisicao.url)
+    )
+  }
 
   // Rotas públicas que não precisam de autenticação
   const rotasPublicas = [
@@ -51,7 +71,7 @@ export async function middleware(requisicao: NextRequest) {
     '/autenticacao/registrar',
     '/autenticacao/recuperar-senha',
     '/autenticacao/nova-senha',
-    '/registrar',          // página de cadastro de nova clínica
+    '/registrar',
     '/recuperar-senha',
     '/agendamento',
   ]
@@ -60,19 +80,20 @@ export async function middleware(requisicao: NextRequest) {
     caminhoAtual === rota || caminhoAtual.startsWith(rota + '/')
   )
 
-  // APIs públicas
-  const ehApiPublica = caminhoAtual.startsWith('/api/agendamento-publico') ||
-                       caminhoAtual.startsWith('/api/agenda/slots') ||
-                       caminhoAtual.startsWith('/api/clinicas')    // cadastro de clínica
+  // (APIs já tratadas acima no bloco imediato)
+  const ehApiPublica = false
 
-  // Se não tem sessão e não é rota pública, redirecionar para login
+  // Se não tem sessão e não é rota pública → redirecionar para login
   if (!session && !ehRotaPublica && !ehApiPublica && !caminhoAtual.startsWith('/api/auth')) {
     const urlLogin = new URL('/autenticacao/entrar', requisicao.url)
-    urlLogin.searchParams.set('redirecionamento', caminhoAtual)
+    // Só preserva destino se for uma rota específica (não o painel padrão)
+    if (caminhoAtual !== '/painel') {
+      urlLogin.searchParams.set('redirecionamento', caminhoAtual)
+    }
     return NextResponse.redirect(urlLogin)
   }
 
-  // Se tem sessão e está tentando acessar páginas de entrada, redirecionar para painel
+  // Se tem sessão e está em página de entrada → redirecionar para painel
   const paginasEntrada = ['/autenticacao/entrar', '/autenticacao/registrar', '/registrar']
   if (session && paginasEntrada.includes(caminhoAtual)) {
     return NextResponse.redirect(new URL('/painel', requisicao.url))

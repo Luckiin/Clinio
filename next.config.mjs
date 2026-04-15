@@ -34,15 +34,11 @@ const configuracaoNext = {
     ]
   },
 
-  // Redirecionamentos
+  // Redirecionamentos estáticos
+  // O roteamento da raiz (/) é tratado pelo middleware dinamicamente
+  // (autenticado → /painel, anônimo → /autenticacao/entrar)
   async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/painel',
-        permanent: false,
-      },
-    ]
+    return []
   },
 }
 

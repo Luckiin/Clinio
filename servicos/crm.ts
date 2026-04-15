@@ -4,6 +4,8 @@
 // ============================================================
 
 import { criarClienteServidor } from '@/lib/supabase-servidor'
+import { criarClienteSupabaseAdmin } from '@/lib/supabase/client'
+import { sendWhatsAppMessage } from '@/lib/integrations/whatsapp/sendMessage'
 import type {
   InteracaoPaciente,
   TagCRM,
@@ -474,9 +476,16 @@ export async function enviarMensagem(
   }
 ): Promise<MensagemConversa> {
   const supabase = criarClienteServidor()
+  const supabaseAdmin = criarClienteSupabaseAdmin()
+
+  const { data: conversa } = await supabaseAdmin
+    .from('conversas')
+    .select('canal')
+    .eq('id', conversaId)
+    .maybeSingle()
 
   // Insere mensagem
-  const { data: msg, error } = await supabase
+  const { data: msg, error } = await supabaseAdmin
     .from('mensagens_conversa')
     .insert({
       conversa_id: conversaId,
@@ -493,13 +502,57 @@ export async function enviarMensagem(
 
   if (error) throw new Error(`Erro ao enviar mensagem: ${error.message}`)
 
+  let mensagemFinal = msg as MensagemConversa
+
+  if (dados.tipo_mensagem === 'enviada' && conversa?.canal === 'whatsapp') {
+    const { data: paciente } = await supabaseAdmin
+      .from('pacientes')
+      .select('telefone_whatsapp, telefone')
+      .eq('id', pacienteId)
+      .maybeSingle()
+
+    if (!paciente) {
+      throw new Error('Paciente não encontrado ao tentar enviar mensagem.')
+    }
+
+    const telefoneDestino = paciente.telefone_whatsapp ?? paciente.telefone
+    if (!telefoneDestino) {
+      throw new Error('Paciente não possui telefone ou celular cadastrado. Não é possível enviar via WhatsApp.')
+    }
+
+    try {
+      let telefoneLimpo = telefoneDestino.replace(/\D/g, '')
+      // Se estiver no Brasil e não tiver o DDI 55, adiciona
+      if (telefoneLimpo.length === 10 || telefoneLimpo.length === 11) {
+        telefoneLimpo = '55' + telefoneLimpo
+      }
+      await sendWhatsAppMessage(clinicaId, telefoneLimpo, dados.conteudo)
+    } catch (whatsError) {
+      // Registrar falha no banco mesmo se der erro na API externa
+      await supabaseAdmin
+        .from('mensagens_conversa')
+        .update({ status_mensagem: 'falhou' })
+        .eq('id', msg.id)
+
+      console.error('Falha no envio para WhatsApp:', whatsError)
+      const erroMsg = (whatsError as Error).message
+      
+      // Detecta erro de token expirado ou inválido
+      if (erroMsg.toLowerCase().includes('access token') || erroMsg.toLowerCase().includes('expired')) {
+        throw new Error('Sessão do WhatsApp expirada ou Token inválido. Por favor, atualize o Access Token no menu Integrações.')
+      }
+      
+      throw new Error(`Falha no WhatsApp: ${erroMsg}`)
+    }
+  }
+
   // Atualiza timestamp da conversa (total_mensagens pode ser mantido por trigger no banco)
-  await supabase
+  await supabaseAdmin
     .from('conversas')
     .update({ ultima_mensagem_em: new Date().toISOString() })
     .eq('id', conversaId)
 
-  return msg as MensagemConversa
+  return mensagemFinal
 }
 
 // ─── TIMELINE ────────────────────────────────────────────────

@@ -171,6 +171,40 @@ CREATE INDEX IF NOT EXISTS idx_mensagens_data ON mensagens_conversa(data_envio D
 CREATE INDEX IF NOT EXISTS idx_mensagens_tipo ON mensagens_conversa(tipo_mensagem);
 
 -- ============================================================
+-- TABELA: whatsapp_integrations
+-- Configuração da integração WhatsApp por clínica (multi-tenant)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS whatsapp_integrations (
+  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  company_id          UUID NOT NULL REFERENCES clinicas(id) ON DELETE CASCADE,
+  access_token        TEXT NOT NULL,
+  phone_number_id     TEXT NOT NULL,
+  business_account_id TEXT NOT NULL,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(company_id),
+  UNIQUE(phone_number_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_whatsapp_integrations_company ON whatsapp_integrations(company_id);
+
+-- ============================================================
+-- TABELA: integrations
+-- Estrutura genérica para integrações externas por clínica
+-- ============================================================
+CREATE TABLE IF NOT EXISTS integrations (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id  UUID NOT NULL REFERENCES clinicas(id) ON DELETE CASCADE,
+  type        TEXT NOT NULL,
+  config      JSONB NOT NULL DEFAULT '{}'::jsonb,
+  active      BOOLEAN NOT NULL DEFAULT true,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(company_id, type)
+);
+
+CREATE INDEX IF NOT EXISTS integrations_company_idx ON integrations(company_id);
+CREATE INDEX IF NOT EXISTS idx_integrations_company_type ON integrations(company_id, type);
+
+-- ============================================================
 -- TABELA: fluxos_chatbot
 -- Definição de fluxos de automação do chatbot
 -- ============================================================
@@ -295,6 +329,8 @@ ALTER TABLE etapas_funil_paciente ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pontuacao_paciente ENABLE ROW LEVEL SECURITY;
 ALTER TABLE conversas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE mensagens_conversa ENABLE ROW LEVEL SECURITY;
+ALTER TABLE whatsapp_integrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE integrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fluxos_chatbot ENABLE ROW LEVEL SECURITY;
 ALTER TABLE campanhas_crm ENABLE ROW LEVEL SECURITY;
 ALTER TABLE envios_campanha_crm ENABLE ROW LEVEL SECURITY;
@@ -311,6 +347,8 @@ DECLARE
     'pontuacao_paciente',
     'conversas',
     'mensagens_conversa',
+    'whatsapp_integrations',
+    'integrations',
     'fluxos_chatbot',
     'campanhas_crm',
     'envios_campanha_crm'
@@ -323,6 +361,8 @@ DECLARE
     'service_role acesso total pontuacao',
     'service_role acesso total conversas',
     'service_role acesso total mensagens',
+    'service_role acesso total whatsapp_integrations',
+    'service_role acesso total integrations',
     'service_role acesso total chatbot',
     'service_role acesso total campanhas_crm',
     'service_role acesso total envios_campanha'

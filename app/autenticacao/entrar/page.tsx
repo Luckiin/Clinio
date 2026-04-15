@@ -83,9 +83,16 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
     const w = () => canvas.offsetWidth
     const h = () => canvas.offsetHeight
 
+    // Zona segura: nós ficam entre 22% e 70% da altura do canvas
+    // Isso evita sobreposição com logo (topo) e stats (base)
+    const safeMinY = () => h() * 0.22
+    const safeMaxY = () => h() * 0.70
+    const FADE_ZONE = 55   // pixels de fade suave antes da barreira
+    const REPULSE = 0.18   // força de repulsão
+
     nosRef.current = TERMOS_CLINICA.map(t => ({
-      x: 60 + Math.random() * (w() - 120),
-      y: 60 + Math.random() * (h() - 120),
+      x: 50 + Math.random() * (w() - 100),
+      y: safeMinY() + Math.random() * (safeMaxY() - safeMinY()),
       vx: (Math.random() - 0.5) * 0.35,
       vy: (Math.random() - 0.5) * 0.35,
       label: t.label,
@@ -99,8 +106,10 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
 
       const nos = nosRef.current
       const mouse = mouseRef.current
+      const minY = safeMinY()
+      const maxY = safeMaxY()
 
-      // Mover nós
+      // Mover nós com repulsão suave nas bordas da zona segura
       nos.forEach(no => {
         no.fase += 0.018
         const dx = mouse.x - no.x
@@ -110,15 +119,33 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
           no.vx -= (dx / dist) * 0.08
           no.vy -= (dy / dist) * 0.08
         }
+        // Repulsão suave vertical (zona segura)
+        if (no.y < minY + FADE_ZONE) {
+          no.vy += REPULSE * (1 - (no.y - minY) / FADE_ZONE)
+        }
+        if (no.y > maxY - FADE_ZONE) {
+          no.vy -= REPULSE * (1 - (maxY - no.y) / FADE_ZONE)
+        }
         no.vx *= 0.99
         no.vy *= 0.99
         no.x += no.vx
         no.y += no.vy
-        if (no.x < 40) { no.x = 40; no.vx = Math.abs(no.vx) }
-        if (no.x > w() - 40) { no.x = w() - 40; no.vx = -Math.abs(no.vx) }
-        if (no.y < 30) { no.y = 30; no.vy = Math.abs(no.vy) }
-        if (no.y > h() - 30) { no.y = h() - 30; no.vy = -Math.abs(no.vy) }
+        // Barreira horizontal
+        if (no.x < 30) { no.x = 30; no.vx = Math.abs(no.vx) }
+        if (no.x > w() - 30) { no.x = w() - 30; no.vx = -Math.abs(no.vx) }
+        // Barreira vertical (zona segura)
+        if (no.y < minY) { no.y = minY; no.vy = Math.abs(no.vy) * 0.4 }
+        if (no.y > maxY) { no.y = maxY; no.vy = -Math.abs(no.vy) * 0.4 }
       })
+
+      // Calcula opacidade do nó com base na proximidade das bordas (fade)
+      const calcAlpha = (y: number) => {
+        const minY = safeMinY()
+        const maxY = safeMaxY()
+        if (y < minY + FADE_ZONE) return Math.max(0, (y - minY) / FADE_ZONE)
+        if (y > maxY - FADE_ZONE) return Math.max(0, (maxY - y) / FADE_ZONE)
+        return 1
+      }
 
       // Linhas de conexão
       nos.forEach((a, i) => {
@@ -127,7 +154,11 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
           const dy = a.y - b.y
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 160) {
-            const alpha = (1 - dist / 160) * (escuro ? 0.25 : 0.18)
+            const fadeA = calcAlpha(a.y)
+            const fadeB = calcAlpha(b.y)
+            const fade = Math.min(fadeA, fadeB)
+            const alpha = (1 - dist / 160) * (escuro ? 0.25 : 0.18) * fade
+            if (alpha <= 0) return
             ctx.strokeStyle = escuro
               ? `rgba(56, 189, 248, ${alpha})`
               : `rgba(2, 132, 199, ${alpha})`
@@ -142,13 +173,15 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
 
       // Nós e labels
       nos.forEach(no => {
+        const fade = calcAlpha(no.y)
+        if (fade <= 0) return
         const pulso = no.tamanho + Math.sin(no.fase) * 1.2
 
         // Halo
         const grad = ctx.createRadialGradient(no.x, no.y, 0, no.x, no.y, pulso * 4)
         grad.addColorStop(0, escuro
-          ? `rgba(14, 165, 233, ${no.destaque ? 0.25 : 0.12})`
-          : `rgba(2, 132, 199, ${no.destaque ? 0.18 : 0.08})`)
+          ? `rgba(14, 165, 233, ${(no.destaque ? 0.25 : 0.12) * fade})`
+          : `rgba(2, 132, 199, ${(no.destaque ? 0.18 : 0.08) * fade})`)
         grad.addColorStop(1, 'transparent')
         ctx.fillStyle = grad
         ctx.beginPath()
@@ -156,9 +189,10 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
         ctx.fill()
 
         // Ponto central
-        ctx.fillStyle = escuro
-          ? (no.destaque ? '#38BDF8' : '#7DD3FC')
-          : (no.destaque ? '#0284C7' : '#38BDF8')
+        const corPonto = escuro
+          ? (no.destaque ? `rgba(56,189,248,${fade})` : `rgba(125,211,252,${fade})`)
+          : (no.destaque ? `rgba(2,132,199,${fade})` : `rgba(56,189,248,${fade})`)
+        ctx.fillStyle = corPonto
         ctx.beginPath()
         ctx.arc(no.x, no.y, pulso, 0, Math.PI * 2)
         ctx.fill()
@@ -167,8 +201,8 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
         const fontSize = no.destaque ? 12 : 10
         ctx.font = `${no.destaque ? '600' : '400'} ${fontSize}px Inter, sans-serif`
         ctx.fillStyle = escuro
-          ? (no.destaque ? 'rgba(224, 242, 254, 0.95)' : 'rgba(186, 230, 253, 0.7)')
-          : (no.destaque ? 'rgba(3, 105, 161, 0.95)' : 'rgba(7, 89, 133, 0.7)')
+          ? (no.destaque ? `rgba(224,242,254,${0.95 * fade})` : `rgba(186,230,253,${0.7 * fade})`)
+          : (no.destaque ? `rgba(3,105,161,${0.95 * fade})` : `rgba(7,89,133,${0.7 * fade})`)
         ctx.textAlign = 'center'
         ctx.fillText(no.label, no.x, no.y - pulso - 5)
       })
@@ -199,6 +233,16 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
 export default function PaginaEntrar() {
   const roteador = useRouter()
   const [escuro, setEscuro] = useState(true)
+  const [destino, setDestino] = useState('/painel')
+
+  useEffect(() => {
+    // Captura o parâmetro de redirecionamento (apenas rotas internas)
+    const params = new URLSearchParams(window.location.search)
+    const redir = params.get('redirecionamento')
+    if (redir && redir.startsWith('/') && !redir.startsWith('//')) {
+      setDestino(redir)
+    }
+  }, [])
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [senhaVisivel, setSenhaVisivel] = useState(false)
@@ -229,7 +273,7 @@ export default function PaginaEntrar() {
       const supabase = criarClienteNavegador()
       const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
       if (error) { setErro('Email ou senha incorretos.'); return }
-      roteador.push('/painel')
+      roteador.push(destino)
       roteador.refresh()
     } catch {
       setErro('Erro ao fazer login. Tente novamente.')
@@ -248,13 +292,29 @@ export default function PaginaEntrar() {
         {/* Canvas animado */}
         <RedeAnimada escuro={escuro} />
 
-        {/* Gradiente na base para legibilidade */}
+        {/* Gradiente de proteção — esconde nós perto das zonas de conteúdo */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background: escuro
-              ? 'linear-gradient(to bottom, rgba(2,6,23,0.3) 0%, rgba(2,6,23,0.0) 40%, rgba(2,6,23,0.7) 100%)'
-              : 'linear-gradient(to bottom, rgba(248,250,252,0.3) 0%, rgba(248,250,252,0.0) 40%, rgba(248,250,252,0.8) 100%)',
+              ? `linear-gradient(to bottom,
+                  rgba(2,6,23,1)    0%,
+                  rgba(2,6,23,0.98) 10%,
+                  rgba(2,6,23,0.55) 18%,
+                  rgba(2,6,23,0)    26%,
+                  rgba(2,6,23,0)    62%,
+                  rgba(2,6,23,0.55) 72%,
+                  rgba(2,6,23,0.98) 82%,
+                  rgba(2,6,23,1)    100%)`
+              : `linear-gradient(to bottom,
+                  rgba(248,250,252,1)    0%,
+                  rgba(248,250,252,0.98) 10%,
+                  rgba(248,250,252,0.55) 18%,
+                  rgba(248,250,252,0)    26%,
+                  rgba(248,250,252,0)    62%,
+                  rgba(248,250,252,0.55) 72%,
+                  rgba(248,250,252,0.98) 82%,
+                  rgba(248,250,252,1)    100%)`,
           }}
         />
 

@@ -221,31 +221,46 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
     const w = () => canvas.offsetWidth
     const h = () => canvas.offsetHeight
 
+    const safeMinY = () => h() * 0.22
+    const safeMaxY = () => h() * 0.70
+    const FADE_ZONE = 55
+    const REPULSE = 0.18
+
     nosRef.current = TERMOS.map(t => ({
-      x: 60 + Math.random() * (w() - 120),
-      y: 60 + Math.random() * (h() - 120),
+      x: 50 + Math.random() * (w() - 100),
+      y: safeMinY() + Math.random() * (safeMaxY() - safeMinY()),
       vx: (Math.random() - 0.5) * 0.35,
       vy: (Math.random() - 0.5) * 0.35,
       label: t.label, tamanho: t.destaque ? 5.5 : 3.5,
       fase: Math.random() * Math.PI * 2, destaque: t.destaque,
     }))
 
+    const calcAlpha = (y: number) => {
+      const minY = safeMinY(); const maxY = safeMaxY()
+      if (y < minY + FADE_ZONE) return Math.max(0, (y - minY) / FADE_ZONE)
+      if (y > maxY - FADE_ZONE) return Math.max(0, (maxY - y) / FADE_ZONE)
+      return 1
+    }
+
     const desenhar = () => {
       ctx.clearRect(0, 0, w(), h())
       const nos = nosRef.current
       const mouse = mouseRef.current
+      const minY = safeMinY(); const maxY = safeMaxY()
 
       nos.forEach(no => {
         no.fase += 0.018
         const dx = mouse.x - no.x; const dy = mouse.y - no.y
         const dist = Math.sqrt(dx * dx + dy * dy)
         if (dist < 120) { no.vx -= (dx / dist) * 0.08; no.vy -= (dy / dist) * 0.08 }
+        if (no.y < minY + FADE_ZONE) no.vy += REPULSE * (1 - (no.y - minY) / FADE_ZONE)
+        if (no.y > maxY - FADE_ZONE) no.vy -= REPULSE * (1 - (maxY - no.y) / FADE_ZONE)
         no.vx *= 0.99; no.vy *= 0.99
         no.x += no.vx; no.y += no.vy
-        if (no.x < 40) { no.x = 40; no.vx = Math.abs(no.vx) }
-        if (no.x > w() - 40) { no.x = w() - 40; no.vx = -Math.abs(no.vx) }
-        if (no.y < 30) { no.y = 30; no.vy = Math.abs(no.vy) }
-        if (no.y > h() - 30) { no.y = h() - 30; no.vy = -Math.abs(no.vy) }
+        if (no.x < 30) { no.x = 30; no.vx = Math.abs(no.vx) }
+        if (no.x > w() - 30) { no.x = w() - 30; no.vx = -Math.abs(no.vx) }
+        if (no.y < minY) { no.y = minY; no.vy = Math.abs(no.vy) * 0.4 }
+        if (no.y > maxY) { no.y = maxY; no.vy = -Math.abs(no.vy) * 0.4 }
       })
 
       nos.forEach((a, i) => {
@@ -253,7 +268,9 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
           const dx = a.x - b.x; const dy = a.y - b.y
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 160) {
-            const alpha = (1 - dist / 160) * (escuro ? 0.25 : 0.18)
+            const fade = Math.min(calcAlpha(a.y), calcAlpha(b.y))
+            const alpha = (1 - dist / 160) * (escuro ? 0.25 : 0.18) * fade
+            if (alpha <= 0) return
             ctx.strokeStyle = escuro ? `rgba(56,189,248,${alpha})` : `rgba(2,132,199,${alpha})`
             ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke()
           }
@@ -261,16 +278,18 @@ function RedeAnimada({ escuro }: { escuro: boolean }) {
       })
 
       nos.forEach(no => {
+        const fade = calcAlpha(no.y)
+        if (fade <= 0) return
         const pulso = no.tamanho + Math.sin(no.fase) * 1.2
         const grad = ctx.createRadialGradient(no.x, no.y, 0, no.x, no.y, pulso * 4)
-        grad.addColorStop(0, escuro ? `rgba(14,165,233,${no.destaque ? 0.25 : 0.12})` : `rgba(2,132,199,${no.destaque ? 0.18 : 0.08})`)
+        grad.addColorStop(0, escuro ? `rgba(14,165,233,${(no.destaque ? 0.25 : 0.12) * fade})` : `rgba(2,132,199,${(no.destaque ? 0.18 : 0.08) * fade})`)
         grad.addColorStop(1, 'transparent')
         ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(no.x, no.y, pulso * 4, 0, Math.PI * 2); ctx.fill()
-        ctx.fillStyle = escuro ? (no.destaque ? '#38BDF8' : '#7DD3FC') : (no.destaque ? '#0284C7' : '#38BDF8')
+        ctx.fillStyle = escuro ? (no.destaque ? `rgba(56,189,248,${fade})` : `rgba(125,211,252,${fade})`) : (no.destaque ? `rgba(2,132,199,${fade})` : `rgba(56,189,248,${fade})`)
         ctx.beginPath(); ctx.arc(no.x, no.y, pulso, 0, Math.PI * 2); ctx.fill()
         const fontSize = no.destaque ? 12 : 10
         ctx.font = `${no.destaque ? '600' : '400'} ${fontSize}px Inter, sans-serif`
-        ctx.fillStyle = escuro ? (no.destaque ? 'rgba(224,242,254,0.95)' : 'rgba(186,230,253,0.7)') : (no.destaque ? 'rgba(3,105,161,0.95)' : 'rgba(7,89,133,0.7)')
+        ctx.fillStyle = escuro ? (no.destaque ? `rgba(224,242,254,${0.95*fade})` : `rgba(186,230,253,${0.7*fade})`) : (no.destaque ? `rgba(3,105,161,${0.95*fade})` : `rgba(7,89,133,${0.7*fade})`)
         ctx.textAlign = 'center'; ctx.fillText(no.label, no.x, no.y - pulso - 5)
       })
 
