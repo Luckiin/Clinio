@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
-  MessageSquare, Send, Search, Plus, Phone,
-  Check, CheckCheck, X, Loader2, User, ArrowLeft
+  Check, CheckCheck, Loader2, MessageSquare, Plus, Search, Send, ArrowLeft, Phone, User, X
 } from 'lucide-react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 
 interface Conversa {
@@ -56,6 +56,13 @@ export default function PaginaChat() {
   const fimMensagensRef = useRef<HTMLDivElement>(null)
   const timeoutBuscaRef = useRef<NodeJS.Timeout>()
   const pollingRef = useRef<NodeJS.Timeout>()
+  // Ref para acessar a conversa selecionada dentro de callbacks sem criar dependência cíclica
+  const conversaSelecionadaRef = useRef<Conversa | null>(null)
+
+  // Mantém a ref sincronizada com o estado
+  useEffect(() => {
+    conversaSelecionadaRef.current = conversaSelecionada
+  }, [conversaSelecionada])
 
   const carregarConversas = useCallback(async (silencioso = false) => {
     if (!silencioso) setCarregando(true)
@@ -63,16 +70,11 @@ export default function PaginaChat() {
       const res = await fetch('/api/crm/conversas')
       if (res.ok) {
         const dados = await res.json()
-        const lista = dados.conversas || []
-        setConversas(lista)
-        
-        // Se houver uma conversa selecionada, atualiza os dados dela na lista
-        if (conversaSelecionada) {
-          const atualizada = lista.find((c: Conversa) => c.id === conversaSelecionada.id)
-          if (atualizada) setConversaSelecionada(atualizada)
+        const lista = dados.conversas || dados.dados
+        if (Array.isArray(lista)) {
+          setConversas(lista)
+          return lista as Conversa[]
         }
-        
-        return lista as Conversa[]
       }
     } catch (err) {
       console.error('Erro ao carregar conversas:', err)
@@ -80,7 +82,7 @@ export default function PaginaChat() {
       if (!silencioso) setCarregando(false)
     }
     return [] as Conversa[]
-  }, [conversaSelecionada])
+  }, []) // sem dependência de conversaSelecionada — usa ref
 
   const carregarMensagens = useCallback(async (idConversa: string, silencioso = false) => {
     if (!silencioso) setCarregandoMensagens(true)
@@ -89,8 +91,6 @@ export default function PaginaChat() {
       if (res.ok) {
         const dados = await res.json()
         const novasMensagens = dados.mensagens || []
-        
-        // Só atualiza se houver mudança para evitar pulos no scroll
         setMensagens(prev => {
           if (JSON.stringify(prev) === JSON.stringify(novasMensagens)) return prev
           return novasMensagens
@@ -103,24 +103,27 @@ export default function PaginaChat() {
     }
   }, [])
 
-  // Efeito inicial e polling
+  // Configuração inicial e polling de 5 segundos
   useEffect(() => {
+    // Carregamento inicial
     carregarConversas()
-    
-    // Polling de 5 segundos para novas mensagens e conversas
-    pollingRef.current = setInterval(() => {
+
+    // Configura o intervalo
+    const interval = setInterval(() => {
+      // Usa referências diretas para evitar dependências no useEffect
       carregarConversas(true)
-      if (conversaSelecionada) {
-        carregarMensagens(conversaSelecionada.id, true)
-      }
+      
+      // A lógica de carregarMensagens já usa ref interna para checar se há conversa selecionada
     }, 5000)
 
-    return () => {
-      if (pollingRef.current) clearInterval(pollingRef.current)
-    }
-  }, [carregarConversas, carregarMensagens, conversaSelecionada?.id])
+    pollingRef.current = interval
 
-  // Efeito quando troca de conversa
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, []) // Vazio para rodar apenas no mount e evitar loops de re-render
+
+  // Efeito separado: carrega mensagens ao trocar de conversa
   useEffect(() => {
     if (conversaSelecionada) {
       carregarMensagens(conversaSelecionada.id)
@@ -188,7 +191,16 @@ export default function PaginaChat() {
         // Se falhou, remove a otimista e avisa
         const erro = await res.json()
         setMensagens(prev => prev.filter(m => m.id !== msgOtimista.id))
-        alert(erro.erro || 'Falha ao enviar mensagem. Tente novamente.')
+        
+        // Tratamento específico para erro de Sandbox/Development da Meta
+        if (erro.erro?.includes('131030')) {
+          toast.error('Número não permitido no Sandbox.', {
+            description: 'Como sua conta é de testes, você precisa autorizar este telefone no painel da Meta antes de enviar.',
+            duration: 10000
+          })
+        } else {
+          toast.error(erro.erro || 'Falha ao enviar mensagem. Tente novamente.')
+        }
       }
     } catch (err) {
       console.error('Erro ao enviar mensagem:', err)
@@ -299,8 +311,15 @@ export default function PaginaChat() {
                 <button
                   key={conversa.id}
                   onClick={() => setConversaSelecionada(conversa)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-slate-50 dark:border-white/5 ${selecionada ? 'bg-slate-100 dark:bg-[#2a3942]' : 'hover:bg-slate-50 dark:hover:bg-[#202c33]'}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all border-b border-slate-50 dark:border-white/5 relative ${
+                    selecionada 
+                      ? 'bg-slate-200/50 dark:bg-[#2a3942] z-0' 
+                      : 'hover:bg-slate-50 dark:hover:bg-[#202c33]'
+                  }`}
                 >
+                  {selecionada && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primaria-600 dark:bg-[#00a884] z-10" />
+                  )}
                   <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
                     <span className="text-base font-bold text-slate-500 dark:text-slate-300">
                       {conversa.pacientes?.nome_completo?.charAt(0).toUpperCase() || '?'}
@@ -308,15 +327,15 @@ export default function PaginaChat() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                      <p className={`text-sm truncate ${selecionada ? 'font-bold text-slate-900 dark:text-white' : 'font-semibold text-slate-800 dark:text-slate-100'}`}>
                         {conversa.pacientes?.nome_completo || 'Paciente'}
                       </p>
-                      <span className="text-xs text-slate-400">
+                      <span className={`text-[10px] ${selecionada ? 'text-primaria-600 dark:text-[#00a884] font-medium' : 'text-slate-400'}`}>
                         {formatarHora(conversa.ultima_mensagem_em)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 capitalize truncate">
-                      {conversa.canal}
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                      {conversa.ultima_mensagem || 'Simbom, envie uma mensagem...'}
                     </p>
                   </div>
                 </button>

@@ -23,6 +23,7 @@ function normalizarConversaParaUI(conversa: any) {
           nome_completo: nomePaciente,
         }
       : null,
+    ultima_mensagem: conversa.ultima_mensagem_conteudo || ''
   }
 }
 

@@ -394,7 +394,33 @@ export async function listarConversas(
 
   const { data, error } = await consulta
   if (error) throw new Error(`Erro ao listar conversas: ${error.message}`)
-  return (data ?? []) as Conversa[]
+
+  const conversas = (data ?? []) as Conversa[]
+
+  // Se houver conversas, vamos buscar o conteúdo da última mensagem de cada uma
+  if (conversas.length > 0) {
+    const ids = conversas.map(c => c.id)
+    
+    // Busca a mensagem mais recente de cada uma dessas conversas
+    // Como o Supabase não faz "limit 1 per group" fácil, buscamos as mensagens recentes 
+    // e filtramos ou usamos uma lógica de mapeamento.
+    const { data: mensagens } = await supabase
+      .from('mensagens_conversa')
+      .select('conversa_id, conteudo, data_envio')
+      .in('conversa_id', ids)
+      .order('data_envio', { ascending: false })
+
+    if (mensagens) {
+      conversas.forEach(c => {
+        const ultima = mensagens.find(m => m.conversa_id === c.id)
+        if (ultima) {
+          c.ultima_mensagem_conteudo = ultima.conteudo
+        }
+      })
+    }
+  }
+
+  return conversas
 }
 
 export async function obterConversa(clinicaId: string, conversaId: string): Promise<Conversa | null> {

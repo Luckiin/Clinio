@@ -688,6 +688,7 @@ export interface Conversa {
   canal: CanalConversa
   status: StatusConversa
   ultima_mensagem_em?: string
+  ultima_mensagem_conteudo?: string
   total_mensagens: number
   nao_lidas: number
   criado_em: string

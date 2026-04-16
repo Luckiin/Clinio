@@ -104,6 +104,37 @@ async function buscarPaciente(clinicaId: string, telefone: string) {
   return null
 }
 
+// ─── Criar paciente automaticamente a partir do contato WhatsApp ─
+
+async function criarPacienteWhatsApp(
+  clinicaId: string,
+  telefone: string,
+  nomeContato?: string,
+): Promise<{ id: string; nome: string }> {
+  const supabase = criarClienteSupabaseAdmin()
+
+  // Normaliza telefone para salvar no banco (sem DDI 55 se brasileiro)
+  const base = normalizarTelefone(telefone)
+  const telefoneSalvo = base.startsWith('55') ? base.slice(2) : base
+  const nome = nomeContato?.trim() || `WhatsApp ${telefoneSalvo}`
+
+  const { data, error } = await supabase
+    .from('pacientes')
+    .insert({
+      clinica_id: clinicaId,
+      nome: nome,
+      telefone: telefoneSalvo,
+      telefone_whatsapp: base,   // com DDI para facilitar lookup futuro
+      status: 'ativo',
+    })
+    .select('id, nome')
+    .single()
+
+  if (error) throw new Error(`Erro ao criar paciente via WhatsApp: ${error.message}`)
+  console.log(`[WhatsApp Webhook] 👤 Paciente criado automaticamente: ${nome} (${telefoneSalvo})`)
+  return data
+}
+
 // ─── Criar/obter conversa WhatsApp ────────────────────────────
 
 async function obterOuCriarConversa(clinicaId: string, pacienteId: string): Promise<string> {
@@ -259,11 +290,22 @@ export async function POST(req: NextRequest) {
           return cfg.phone_number_id === phoneNumberId
         })
         if (!integracao?.company_id) {
-          console.warn('[WhatsApp Webhook] phone_number_id não mapeado:', phoneNumberId)
+          console.warn(
+            `[WhatsApp Webhook] ⚠️ phone_number_id "${phoneNumberId}" não mapeado para nenhuma clínica.`,
+            `Salve a integração em Painel → Integrações com este Phone Number ID.`
+          )
           continue
         }
 
         const clinicaId = integracao.company_id
+
+        // Mapa de nomes dos contatos do payload (wa_id → nome)
+        const nomesContatos: Record<string, string> = {}
+        for (const c of change.value?.contacts ?? []) {
+          if (c.wa_id && c.profile?.name) {
+            nomesContatos[c.wa_id] = c.profile.name
+          }
+        }
 
         // Processar status updates (sent/delivered/read/failed)
         for (const st of change.value?.statuses ?? []) {
@@ -277,16 +319,18 @@ export async function POST(req: NextRequest) {
           const texto = extrairTextoMensagem(msg)
           if (!texto || !msg.from) continue
 
-          const paciente = await buscarPaciente(clinicaId, msg.from)
+          // Buscar paciente; se não existir, criar automaticamente com o nome do WhatsApp
+          let paciente = await buscarPaciente(clinicaId, msg.from)
           if (!paciente) {
-            console.warn('[WhatsApp Webhook] Paciente não encontrado para:', msg.from)
-            continue
+            const nomeContato = nomesContatos[msg.from] ?? nomesContatos[normalizarTelefone(msg.from)]
+            console.log(`[WhatsApp Webhook] Paciente não encontrado para ${msg.from}, criando automaticamente...`)
+            paciente = await criarPacienteWhatsApp(clinicaId, msg.from, nomeContato)
           }
 
           const conversaId = await obterOuCriarConversa(clinicaId, paciente.id)
           await salvarMensagem(conversaId, paciente.id, texto, msg.id)
 
-          console.log(`[WhatsApp Webhook] ✅ Mensagem salva — clínica:${clinicaId} paciente:${paciente.id}`)
+          console.log(`[WhatsApp Webhook] ✅ Mensagem salva — paciente: ${paciente.nome} | texto: "${texto}"`)
         }
       }
     }
